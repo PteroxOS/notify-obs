@@ -144,6 +144,7 @@
     <div class="tabs">
       <div class="tab active" onclick="switchTab('urlTab')">URL Media</div>
       <div class="tab" onclick="switchTab('searchTab')">Song Share</div>
+      <div class="tab" onclick="switchTab('goalTab')">Goal Settings</div>
     </div>
 
     <form id="donationForm">
@@ -183,8 +184,31 @@
       </div>
       
       <button type="submit">Trigger Donation</button>
+      
+      <div id="status"></div>
     </form>
-    <div id="status"></div>
+
+    <!-- FORM PENGATURAN GOAL (Sembunyi by default) -->
+    <form id="goalForm" style="display: none;">
+      <div class="form-group">
+        <label for="goalStreamKey">Stream Key</label>
+        <input type="text" id="goalStreamKey" required>
+      </div>
+      <div class="form-group">
+        <label for="goalTitle">Goal Title</label>
+        <input type="text" id="goalTitle" required placeholder="Contoh: Beli PC Baru">
+      </div>
+      <div class="form-group">
+        <label for="goalTarget">Target Amount (Rp)</label>
+        <input type="number" id="goalTarget" required placeholder="Contoh: 10000000">
+      </div>
+      <div class="form-group">
+        <label for="goalCurrent">Set Current Amount (Optional)</label>
+        <input type="number" id="goalCurrent" placeholder="Kosongkan jika tidak mau diubah">
+      </div>
+      <button type="submit" style="background: #28a745;">Update Goal</button>
+      <div id="goalStatus" style="margin-top: 15px; padding: 10px; border-radius: 4px; display: none;"></div>
+    </form>
   </div>
 
   <script>
@@ -198,11 +222,33 @@
       document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
       
       event.target.classList.add('active');
-      document.getElementById(tabId).classList.add('active');
+      
+      if (tabId === 'goalTab') {
+        document.getElementById('donationForm').style.display = 'none';
+        document.getElementById('goalForm').style.display = 'block';
+        fetchCurrentGoal();
+      } else {
+        document.getElementById('goalForm').style.display = 'none';
+        document.getElementById('donationForm').style.display = 'block';
+        document.getElementById(tabId).classList.add('active');
+      }
       
       // Clear URL if switching tabs to avoid confusion
       if (tabId === 'urlTab') {
         resultsContainer.style.display = 'none';
+      }
+    }
+
+    async function fetchCurrentGoal() {
+      try {
+        const res = await fetch('/goal');
+        if (res.ok) {
+          const goal = await res.json();
+          document.getElementById('goalTitle').value = goal.title || '';
+          document.getElementById('goalTarget').value = goal.targetAmount || '';
+        }
+      } catch (err) {
+        console.error('Failed to fetch goal:', err);
       }
     }
 
@@ -322,6 +368,47 @@
       } catch (err) {
         statusDiv.textContent = `❌ Network Error: ${err.message}`;
         statusDiv.className = 'error';
+        statusDiv.style.display = 'block';
+      }
+    });
+
+    // GOAL FORM SUBMISSION
+    document.getElementById('goalForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const streamKey = document.getElementById('goalStreamKey').value;
+      const title = document.getElementById('goalTitle').value;
+      const targetAmount = parseInt(document.getElementById('goalTarget').value, 10);
+      const currentVal = document.getElementById('goalCurrent').value;
+      
+      const payload = { streamKey, title, targetAmount };
+      if (currentVal !== '') {
+        payload.currentAmount = parseInt(currentVal, 10);
+      }
+
+      const statusDiv = document.getElementById('goalStatus');
+      statusDiv.style.display = 'none';
+
+      try {
+        const res = await fetch('/goal/update', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        if (res.ok) {
+          statusDiv.className = 'success';
+          statusDiv.innerText = 'Goal successfully updated!';
+          statusDiv.style.display = 'block';
+          document.getElementById('goalCurrent').value = ''; // Reset input
+        } else {
+          statusDiv.className = 'error';
+          statusDiv.innerText = 'Error: ' + (await res.text());
+          statusDiv.style.display = 'block';
+        }
+      } catch (err) {
+        statusDiv.className = 'error';
+        statusDiv.innerText = 'Error: ' + err.message;
         statusDiv.style.display = 'block';
       }
     });

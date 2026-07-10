@@ -6,6 +6,7 @@ import { AppService } from './app.service';
 import { validate } from './config/env.validation';
 import { DonationsModule } from './donations/donations.module';
 import { RealtimeModule } from './realtime/realtime.module';
+import { GoalModule } from './goal/goal.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { RealtimeModule } from './realtime/realtime.module';
     }),
     DonationsModule,
     RealtimeModule,
+    GoalModule,
   ],
   controllers: [AppController],
   providers: [AppService],

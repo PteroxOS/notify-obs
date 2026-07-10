@@ -3,6 +3,7 @@ import { Logger } from '@nestjs/common';
 import { Job } from 'bullmq';
 import { RealtimeGateway } from '../realtime/realtime.gateway';
 import { YouTubeService, MediaTrack } from './providers/youtube.service';
+import { GoalService } from '../goal/goal.service';
 
 @Processor('donations-processing')
 export class DonationsProcessor extends WorkerHost {
@@ -10,7 +11,8 @@ export class DonationsProcessor extends WorkerHost {
 
   constructor(
     private readonly realtimeGateway: RealtimeGateway,
-    private readonly youtubeService: YouTubeService
+    private readonly youtubeService: YouTubeService,
+    private readonly goalService: GoalService
   ) {
     super();
   }
@@ -46,6 +48,9 @@ export class DonationsProcessor extends WorkerHost {
 
     // In a real app, you would save to DB here. 
     this.realtimeGateway.emitDonation(job.data);
+    
+    // Update the donation goal
+    this.goalService.incrementAmount(job.data.amount);
     
     return { success: true };
   }
