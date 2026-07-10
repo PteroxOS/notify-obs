@@ -1,105 +1,163 @@
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap');
 
-body {
+* {
+  box-sizing: border-box;
   margin: 0;
   padding: 0;
-  overflow: hidden;
+}
+
+body {
   font-family: 'Plus Jakarta Sans', sans-serif;
   background-color: transparent;
+  overflow: hidden;
+  padding: 10px; /* So box-shadow isn't clipped */
 }
 
 .goal-container {
   display: inline-flex;
   align-items: stretch;
   position: relative;
-  background: #1a0f08; /* Warm dark from palette */
-  border-radius: 10px;
+  border-radius: 16px;
   overflow: hidden;
-  /* Subtle warm glow */
-  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 109, 41, 0.15);
-  min-width: 340px;
-  padding-bottom: 4px; /* Space for progress bar at bottom */
+  min-width: 380px;
+
+  /* ── Glassmorphism core ── */
+  background: linear-gradient(
+    135deg,
+    rgba(255, 109, 41, 0.18) 0%,
+    rgba(30, 16, 8, 0.55) 50%,
+    rgba(20, 12, 6, 0.65) 100%
+  );
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+
+  /* Glass border */
+  border: 1px solid rgba(255, 109, 41, 0.3);
+  border-top: 1px solid rgba(255, 255, 255, 0.18); /* Top highlight */
+  border-left: 1px solid rgba(255, 255, 255, 0.12); /* Left highlight */
+
+  /* Shadow */
+  box-shadow:
+    0 12px 36px rgba(0, 0, 0, 0.55),
+    0 2px 8px rgba(255, 109, 41, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12); /* Inner top shine */
+
+  padding-bottom: 4px; /* Space for progress bar */
 }
 
-/* Left: Percentage block */
+/* Sheen / gloss layer on top */
+.goal-container::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 45%;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.08) 0%,
+    transparent 100%
+  );
+  border-radius: 16px 16px 0 0;
+  pointer-events: none;
+  z-index: 5;
+}
+
+/* ── Left: big percentage ── */
 .goal-left {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 16px 22px;
+  padding: 18px 24px;
   flex-shrink: 0;
+  position: relative;
+  z-index: 10;
 }
 
 .goal-pct {
-  font-size: 36px;
+  font-size: 38px;
   font-weight: 800;
-  color: #FF6D29; /* Orange from palette */
+  color: #FF6D29;
   line-height: 1;
-  letter-spacing: -1px;
+  letter-spacing: -2px;
+  /* Text glow */
+  text-shadow: 0 0 18px rgba(255, 109, 41, 0.6), 0 2px 6px rgba(0, 0, 0, 0.5);
 }
 
-/* Vertical Divider */
+/* ── Vertical Divider ── */
 .goal-divider {
   width: 1px;
-  background: rgba(255, 109, 41, 0.25);
-  margin: 12px 0;
+  margin: 14px 0;
   flex-shrink: 0;
+  background: linear-gradient(
+    180deg,
+    transparent,
+    rgba(255, 109, 41, 0.45) 30%,
+    rgba(255, 109, 41, 0.45) 70%,
+    transparent
+  );
+  position: relative;
+  z-index: 10;
 }
 
-/* Right: Info block */
+/* ── Right: info block ── */
 .goal-right {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: 14px 20px;
-  gap: 6px;
+  padding: 16px 20px 16px 18px;
+  gap: 7px;
   flex: 1;
+  position: relative;
+  z-index: 10;
 }
 
 .goal-title {
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
-  color: #ffffff;
+  color: rgba(255, 255, 255, 0.7);
   text-transform: uppercase;
-  letter-spacing: 1.5px;
-  white-space: nowrap;
+  letter-spacing: 2px;
 }
 
-/* Horizontal separator line inside right block */
+/* Thin separator between title and amounts */
 .goal-separator {
   height: 1px;
-  background: rgba(255, 255, 255, 0.1);
-  width: 100%;
+  background: linear-gradient(90deg, rgba(255,109,41,0.4), transparent);
 }
 
 .goal-amounts {
   display: flex;
   align-items: baseline;
-  gap: 5px;
-  font-size: 14px;
-  font-weight: 600;
-  color: #BABABA; /* Grey from palette */
+  gap: 6px;
 }
 
 #goal-current {
-  font-size: 17px;
+  font-size: 20px;
   font-weight: 800;
   color: #ffffff;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
 }
 
 .goal-slash {
-  color: rgba(255, 255, 255, 0.3);
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.25);
   font-weight: 500;
 }
 
-/* Bottom progress bar — grows as thin line */
+#goal-target {
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+/* ── Bottom Progress Line ── */
 .goal-progress-track {
   position: absolute;
   bottom: 0;
   left: 0;
   right: 0;
   height: 4px;
-  background: rgba(255, 109, 41, 0.12);
+  background: rgba(255, 109, 41, 0.1);
+  z-index: 20;
 }
 
 .goal-progress-fill {
@@ -107,19 +165,22 @@ body {
   background: #FF6D29;
   width: 0%;
   transition: width 1.2s cubic-bezier(0.16, 1, 0.3, 1);
-  /* Glow at the tip */
-  box-shadow: 4px 0 12px rgba(255, 109, 41, 0.7);
   border-radius: 0 2px 2px 0;
+  box-shadow: 3px 0 14px rgba(255, 109, 41, 0.8);
 }
 
-/* Completed state */
+/* ── Completed state ── */
 .goal-completed .goal-pct {
   color: #34d399;
+  text-shadow: 0 0 18px rgba(52, 211, 153, 0.6);
 }
 .goal-completed .goal-progress-fill {
   background: #10b981;
-  box-shadow: 4px 0 12px rgba(16, 185, 129, 0.7);
+  box-shadow: 3px 0 14px rgba(16, 185, 129, 0.8);
 }
 .goal-completed .goal-divider {
-  background: rgba(52, 211, 153, 0.3);
+  background: linear-gradient(180deg, transparent, rgba(52,211,153,0.45) 30%, rgba(52,211,153,0.45) 70%, transparent);
+}
+.goal-completed .goal-separator {
+  background: linear-gradient(90deg, rgba(52,211,153,0.4), transparent);
 }
