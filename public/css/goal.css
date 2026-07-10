@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -6,113 +6,132 @@ body {
   font-family: 'Inter', sans-serif;
   background: transparent;
   overflow: hidden;
-  padding: 4px;
+  padding: 6px;
 }
 
-/* ── Card ── */
+/* ─── Card Shell ─── */
 .goal-container {
   min-width: 460px;
-  border-radius: 12px;
+  border-radius: 14px;
   overflow: hidden;
-  background: #111827;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8);
+  /* Dark card with a very subtle warm tint */
+  background: #16100a;
+  box-shadow:
+    0 16px 48px rgba(0,0,0,0.85),
+    0 0 0 1px rgba(255,255,255,0.06);
 }
 
-/* ── Body row: info + badge ── */
+/* ─── Main body row ─── */
 .goal-body {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 14px 16px 14px 20px;
-  gap: 16px;
+  gap: 14px;
+  padding: 14px 18px 14px 0;
 }
 
-/* Left: text stack */
+/* Left orange accent bar */
+.goal-accent-bar {
+  width: 4px;
+  align-self: stretch;
+  border-radius: 0 4px 4px 0;
+  background: linear-gradient(180deg, #fb923c, #ea580c);
+  flex-shrink: 0;
+}
+
+/* ─── Text info ─── */
 .goal-info {
+  flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  flex: 1;
+  gap: 3px;
 }
 
 .goal-label {
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 2.5px;
-  color: #06b6d4; /* Cyan — our brand color, different from saweria green */
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  color: #f97316; /* Orange */
   text-transform: uppercase;
 }
 
 .goal-title {
-  font-size: 20px;
+  font-size: 19px;
   font-weight: 800;
-  color: #f9fafb;
-  line-height: 1.1;
-  letter-spacing: -0.3px;
+  color: #fff;
+  letter-spacing: -0.4px;
+  line-height: 1.15;
 }
 
 .goal-amounts {
   display: flex;
   align-items: baseline;
-  gap: 8px;
-  margin-top: 2px;
+  gap: 6px;
+  margin-top: 1px;
 }
 
 #goal-current {
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 700;
-  color: #f9fafb;
+  color: #fff;
+}
+
+.goal-sep {
+  font-size: 12px;
+  color: rgba(255,255,255,0.2);
 }
 
 #goal-target {
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 500;
-  color: #6b7280;
+  color: rgba(255,255,255,0.35);
 }
 
-/* Right: percentage badge */
+/* ─── Percentage badge ─── */
 .goal-badge {
   flex-shrink: 0;
-  background: #06b6d4;
+  margin-right: 4px;
+  padding: 10px 16px;
   border-radius: 10px;
-  padding: 10px 18px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  /* Soft warm orange gradient */
+  background: linear-gradient(135deg, #fb923c 0%, #ea580c 100%);
+  box-shadow:
+    0 4px 16px rgba(249,115,22,0.45),
+    inset 0 1px 0 rgba(255,255,255,0.2);
 }
 
 .goal-badge span {
-  font-size: 26px;
+  font-size: 24px;
   font-weight: 800;
-  color: #0c0f14;
+  color: #fff;
   letter-spacing: -1px;
   line-height: 1;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.3);
 }
 
-/* ── Progress bar (bottom) ── */
+/* ─── Progress bar ─── */
 .goal-bar-track {
   height: 5px;
-  background: rgba(255, 255, 255, 0.06);
-  border-radius: 0 0 12px 12px;
-  overflow: hidden;
+  background: rgba(255,255,255,0.05);
 }
 
 .goal-bar-fill {
   height: 100%;
   width: 0%;
-  background: #06b6d4;
+  background: linear-gradient(90deg, #fb923c, #f97316);
   transition: width 1.2s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 0 8px rgba(6, 182, 212, 0.6);
+  box-shadow: 0 0 10px rgba(249,115,22,0.5);
 }
 
-/* ── Goal completed ── */
-.goal-completed .goal-badge {
-  background: #22c55e;
+/* ─── Completed ─── */
+.goal-completed .goal-accent-bar {
+  background: linear-gradient(180deg, #4ade80, #16a34a);
 }
-.goal-completed .goal-label {
-  color: #22c55e;
+.goal-completed .goal-label { color: #4ade80; }
+.goal-completed .goal-badge {
+  background: linear-gradient(135deg, #4ade80, #16a34a);
+  box-shadow: 0 4px 16px rgba(74,222,128,0.4), inset 0 1px 0 rgba(255,255,255,0.2);
 }
 .goal-completed .goal-bar-fill {
-  background: #22c55e;
-  box-shadow: 0 0 8px rgba(34, 197, 94, 0.6);
+  background: linear-gradient(90deg, #4ade80, #16a34a);
+  box-shadow: 0 0 10px rgba(74,222,128,0.5);
 }
