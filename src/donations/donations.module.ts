@@ -7,6 +7,7 @@ import { YouTubeService } from './providers/youtube.service';
 import { ProfanityService } from './providers/profanity.service';
 import { InstagramService } from './providers/instagram.service';
 import { RealtimeModule } from '../realtime/realtime.module';
+import { GoalModule } from '../goal/goal.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { RealtimeModule } from '../realtime/realtime.module';
       name: 'donations-processing',
     }),
     RealtimeModule,
+    GoalModule,
   ],
   controllers: [DonationsController],
   providers: [DonationsProcessor, TikTokService, YouTubeService, ProfanityService, InstagramService],
