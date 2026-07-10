@@ -26,12 +26,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (goal.targetAmount > 0) {
       pct = (goal.currentAmount / goal.targetAmount) * 100;
     }
-    
-    // Cap at 100% visually for the bar width
+
     const displayPct = Math.min(100, pct);
     fillEl.style.width = displayPct + '%';
-    
-    // Add pulsing effect if goal reached
+
+    // Update the big percentage text on the left
+    if (pctEl) {
+      pctEl.textContent = Math.floor(displayPct) + '%';
+    }
+
     const container = document.querySelector('.goal-container');
     if (pct >= 100) {
       container.classList.add('goal-completed');
@@ -60,13 +63,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   socket.on('goal_update', (goal) => {
     updateGoalUI(goal);
-    
-    // Flash current text briefly
-    currentEl.style.color = '#fff';
-    currentEl.style.transform = 'scale(1.1)';
-    setTimeout(() => {
-      currentEl.style.color = '#4ade80';
-      currentEl.style.transform = 'scale(1)';
-    }, 300);
+
+    // Brief flash animation on update
+    if (currentEl) {
+      currentEl.style.transition = 'transform 0.15s ease';
+      currentEl.style.transform = 'scale(1.12)';
+      setTimeout(() => {
+        currentEl.style.transform = 'scale(1)';
+      }, 200);
+    }
   });
 });
