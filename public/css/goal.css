@@ -1,124 +1,90 @@
+@import url('https://fonts.googleapis.com/css2?family=Inconsolata:wght@500;700&display=swap');
+
 body {
   margin: 0;
   padding: 0;
   overflow: hidden;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  font-family: 'Inconsolata', 'Courier New', Courier, monospace;
   background-color: transparent;
 }
 
 .goal-container {
   width: 100%;
-  max-width: 550px;
+  max-width: 500px;
   position: relative;
   box-sizing: border-box;
   
-  /* Sleek HUD Background */
-  background: rgba(15, 23, 42, 0.85); /* Deep slate, semi-transparent */
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-left: 4px solid #0284c7; /* Accent border on the left */
-  border-radius: 6px;
-  padding: 14px 18px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
-}
-
-.goal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  margin-bottom: 10px;
+  /* Retro / Saweria Style Background */
+  background: #f5b041;
+  border: 2px solid #222;
+  padding: 8px 14px;
+  box-shadow: 5px 5px 0px rgba(34, 34, 34, 1);
+  text-align: center;
 }
 
 .goal-title {
-  font-size: 16px;
-  font-weight: 800;
-  color: #f8fafc; /* Crisp white */
+  font-size: 18px;
+  font-weight: 700;
+  color: #222;
   text-transform: uppercase;
-  letter-spacing: 1px;
-  /* Clean, crisp shadow since we have a dark background now */
-  text-shadow: 0 2px 4px rgba(0,0,0,0.6);
+  letter-spacing: 0px;
+  margin-bottom: 6px;
 }
 
 .goal-amounts {
-  font-size: 13px;
-  font-weight: 600;
-  color: #cbd5e1;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+  font-size: 16px;
+  font-weight: 700;
+  color: #222;
 }
 
 #goal-current {
-  color: #38bdf8;
-  font-size: 15px;
-  font-weight: 800;
+  color: #222;
+  font-size: 16px;
+  font-weight: 700;
 }
 
 .goal-bar-bg {
   width: 100%;
-  height: 20px;
-  background: rgba(0, 0, 0, 0.7);
-  border-radius: 4px;
-  border: 1px solid rgba(255, 255, 255, 0.05); /* Subtle inner border */
+  height: 18px;
+  background: #e59866; /* Slightly darker orange/yellow for contrast */
+  border: 1px solid #222;
   position: relative;
-  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.8);
   overflow: hidden;
+  margin-bottom: 6px;
 }
 
 .goal-bar-fill {
   height: 100%;
-  background: #0284c7; /* Solid base color */
-  border-radius: 3px;
+  background: #3498db; /* Blue */
   width: 0%;
   transition: width 1s cubic-bezier(0.16, 1, 0.3, 1);
   position: relative;
-  box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.25), inset 0 -2px 4px rgba(0, 0, 0, 0.4);
+  border-right: 1px solid #222;
 }
 
-/* Striped overlay pattern often used in esports/gaming */
+/* Striped overlay pattern */
 .goal-bar-fill::before {
   content: '';
   position: absolute;
   top: 0; left: 0; right: 0; bottom: 0;
   background-image: linear-gradient(
     -45deg, 
-    rgba(255, 255, 255, 0.15) 25%, 
+    rgba(255, 255, 255, 0.2) 25%, 
     transparent 25%, 
     transparent 50%, 
-    rgba(255, 255, 255, 0.15) 50%, 
-    rgba(255, 255, 255, 0.15) 75%, 
+    rgba(255, 255, 255, 0.2) 50%, 
+    rgba(255, 255, 255, 0.2) 75%, 
     transparent 75%, 
     transparent
   );
-  background-size: 20px 20px;
-  animation: moveStripes 1.5s linear infinite;
-}
-
-@keyframes moveStripes {
-  0% { background-position: 0 0; }
-  100% { background-position: 20px 20px; }
+  background-size: 12px 12px;
 }
 
 .goal-percentage {
-  position: absolute;
-  right: 18px;
-  bottom: 12px; /* Move inside or right under the bar */
-  font-size: 11px;
-  font-weight: 800;
-  color: #fff;
-  text-shadow: 0 1px 3px rgba(0,0,0,0.8);
-  opacity: 0;
-  transition: opacity 0.3s;
+  display: none; /* Hide percentage text to match saweria */
 }
 
 /* For completed goal */
-.goal-completed {
-  border-left-color: #10b981;
-}
-
 .goal-completed .goal-bar-fill {
-  background: #10b981;
-}
-
-.goal-completed #goal-current {
-  color: #34d399;
+  background: #27ae60;
 }
