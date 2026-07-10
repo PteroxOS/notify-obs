@@ -31,6 +31,7 @@ export class QueueManager {
     
     const onEnd = () => {
       this.isPlaying = false;
+      localStorage.setItem('notify_set_volume', JSON.stringify({ volume: 100, timestamp: Date.now() }));
       this.processQueue();
     };
 
@@ -51,6 +52,9 @@ export class QueueManager {
       return;
     }
     
+    // Duck background music volume for visual alerts (Text/Video)
+    localStorage.setItem('notify_set_volume', JSON.stringify({ volume: 15, timestamp: Date.now() }));
+
     // Determine provider for other media (e.g. TikTok, Instagram)
     const ytId = this.extractYouTubeId(donation.youtubeUrl);
     const isTikTok = /tiktok\.com/i.test(donation.youtubeUrl || '');

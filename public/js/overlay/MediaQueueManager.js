@@ -115,4 +115,10 @@ export class MediaQueueManager {
       this.ui.container.style.opacity = '1';
     }
   }
+
+  setVolume(volumeLevel) {
+    if (this.player && this.player.setVolume) {
+      this.player.setVolume(volumeLevel);
+    }
+  }
 }

@@ -25,6 +25,17 @@ document.addEventListener('DOMContentLoaded', () => {
         console.error('Error parsing notify_play_song:', err);
       }
     }
+    
+    if (e.key === 'notify_set_volume' && e.newValue) {
+      try {
+        const payload = JSON.parse(e.newValue);
+        if (typeof payload.volume === 'number') {
+          mediaQueueManager.setVolume(payload.volume);
+        }
+      } catch (err) {
+        console.error('Error parsing notify_set_volume:', err);
+      }
+    }
   });
 
   console.log('Media overlay ready and waiting for signals from QueueManager');
