@@ -14,6 +14,11 @@ export class AlertUI {
       'Rp ' + this.donation.amount.toLocaleString('id-ID');
     const isWhale = this.donation.amount >= 1000000;
     const song = this.donation.mediaQueueTrack;
+    
+    // Parse Custom Emojis for Visual Output (e.g. [emot-merah])
+    const displayMessage = this.donation.message 
+      ? this.donation.message.replace(/\[([a-zA-Z0-9_-]+)\]/g, '<img src="assets/emoji/$1.png" class="custom-emoji">') 
+      : '';
 
     this.el.innerHTML = `
       ${providerHtml}
@@ -39,7 +44,7 @@ export class AlertUI {
             <span class="action-text">memberikan dukungan</span>
           </div>
           <div class="donation-amount">${formattedAmount}</div>
-          ${this.donation.message ? `<div class="message-text">"${this.donation.message}"</div>` : ''}
+          ${displayMessage ? `<div class="message-text">"${displayMessage}"</div>` : ''}
         </div>
       </div>
     `;
@@ -56,8 +61,10 @@ export class AlertUI {
     // TTS for donations >= 100k
     if (this.donation.amount >= 100000 && this.donation.message) {
       setTimeout(() => {
+        // Strip emoji shortcodes before speaking so the robot doesn't read "[emot-merah]"
+        const cleanMessageForTTS = this.donation.message.replace(/\[([a-zA-Z0-9_-]+)\]/g, '').trim();
         // Truncate message to avoid Google TTS URL length limit
-        const safeMessage = this.donation.message.substring(0, 150);
+        const safeMessage = cleanMessageForTTS.substring(0, 150);
         const textToSpeak = encodeURIComponent(
           `${this.donation.name} baru saja memberikan ${this.donation.amount} rupiah. ${safeMessage}`
         );

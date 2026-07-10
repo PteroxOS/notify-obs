@@ -135,6 +135,7 @@
     .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
     .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
   </style>
+  <script src="https://cdn.jsdelivr.net/npm/emoji-mart@latest/dist/browser.js"></script>
 </head>
 <body>
   <div class="container">
@@ -180,7 +181,10 @@
 
       <div class="form-group">
         <label for="message">Message</label>
-        <textarea id="message" rows="3">Kesuksesan bukan tentang siapa yang paling berbakat, melainkan siapa yang tetap bertahan ketika orang lain memilih menyerah</textarea>
+        <div id="messageWrapper" style="position: relative;">
+          <textarea id="message" rows="3">Kesuksesan bukan tentang siapa yang paling berbakat, melainkan siapa yang tetap bertahan ketika orang lain memilih menyerah</textarea>
+          <button type="button" id="emojiBtn" style="position: absolute; right: 10px; bottom: 10px; background: none; border: none; font-size: 20px; cursor: pointer;" title="Insert Emoji">😀</button>
+        </div>
       </div>
       
       <button type="submit">Trigger Donation</button>
@@ -216,6 +220,54 @@
     const searchInput = document.getElementById('songSearchInput');
     const resultsContainer = document.getElementById('songSearchResults');
     const ytUrlInput = document.getElementById('youtubeUrl');
+
+    // Emoji Picker Logic (Emoji Mart)
+    const emojiBtn = document.getElementById('emojiBtn');
+    const messageInput = document.getElementById('message');
+    let picker = null;
+
+    emojiBtn.onclick = () => {
+      if (!picker) {
+        picker = new EmojiMart.Picker({
+          set: 'apple',
+          categories: ['custom', 'frequent', 'people', 'nature', 'foods', 'activity', 'places', 'objects', 'symbols', 'flags'],
+          custom: [
+            {
+              id: 'custom_emojis',
+              name: 'Custom Emojis',
+              emojis: [
+                {
+                  id: 'emot-merah',
+                  name: 'emot-merah',
+                  keywords: ['merah'],
+                  skins: [{ src: '/assets/emoji/emot-merah.png' }]
+                }
+              ]
+            }
+          ],
+          onEmojiSelect: (emoji) => {
+            if (emoji.native) {
+              messageInput.value += emoji.native;
+            } else {
+              // Custom emoji shortcode
+              messageInput.value += ` [${emoji.id}] `;
+            }
+          }
+        });
+        
+        const pickerContainer = document.createElement('div');
+        pickerContainer.id = 'emojiPickerContainer';
+        pickerContainer.style.position = 'absolute';
+        pickerContainer.style.right = '0';
+        pickerContainer.style.bottom = '40px';
+        pickerContainer.style.zIndex = '100';
+        pickerContainer.appendChild(picker);
+        document.getElementById('messageWrapper').appendChild(pickerContainer);
+      } else {
+        const container = document.getElementById('emojiPickerContainer');
+        container.style.display = container.style.display === 'none' ? 'block' : 'none';
+      }
+    };
 
     function switchTab(tabId) {
       document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));

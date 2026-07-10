@@ -220,3 +220,12 @@ html, body {
   color: rgba(255,255,255,0.4);
   font-size: 11px;
 }
+
+/* Custom Emojis in Message */
+.custom-emoji {
+  height: 1.3em;
+  vertical-align: -0.25em;
+  display: inline-block;
+  margin: 0 2px;
+  border-radius: 2px;
+}
