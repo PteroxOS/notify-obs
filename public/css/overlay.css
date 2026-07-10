@@ -1,24 +1,23 @@
-/* Mandatory for OBS */
-html,
-body {
+/* ── Base ── */
+html, body {
   background: transparent !important;
-  margin: 0;
-  padding: 0;
+  margin: 0; padding: 0;
   overflow: hidden;
   font-family: 'Inter', sans-serif;
   color: #ffffff;
 }
 
+/* ── Alert Container ── */
 #alert-container {
   position: absolute;
   bottom: 60px;
   left: 50%;
   transform: translateX(-50%);
-  width: 580px;
+  width: 560px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 15px;
+  gap: 12px;
 }
 
 .alert-wrapper {
@@ -26,191 +25,198 @@ body {
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 12px;
   opacity: 0;
-  transform: translateY(30px);
-  transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transform: translateY(24px) scale(0.98);
+  transition: opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .alert-wrapper.show {
   opacity: 1;
-  transform: translateY(0);
+  transform: translateY(0) scale(1);
 }
 
-/* YouTube Video Container */
+/* ── YouTube Video ── */
 .video-container {
   width: 100%;
-  border-radius: 12px;
+  border-radius: 10px;
   overflow: hidden;
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
-  display: none; /* hidden if no video */
+  box-shadow: 0 12px 32px rgba(0,0,0,0.6);
+  display: none;
 }
 .video-container iframe {
   width: 100%;
-  height: 326px; /* 16:9 ratio for 580px width */
+  height: 315px;
   border: none;
   display: block;
 }
 
+/* ── Alert Box ── */
 .alert-box {
   width: 100%;
   position: relative;
-  /* Very dark, sleek, solid base background */
-  background: #141517;
-  border: 1px solid #2a2b30; /* Crisp border */
-  border-radius: 12px;
+  background: linear-gradient(135deg, #16181f 0%, #0d0e12 100%);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-top: 1px solid rgba(255,255,255,0.12); /* Subtle top highlight */
+  border-radius: 0 10px 10px 0;
   overflow: hidden;
-  /* Elevated modern shadow */
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 12px 36px rgba(0,0,0,0.6);
 }
 
-/* Integrated accent bar using pseudo-element */
+/* Left accent */
 .alert-box::before {
   content: '';
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 6px;
+  top: 0; left: 0;
+  width: 4px;
   height: 100%;
-  background-color: #00f2fe; /* Solid bright cyan */
-  /* Subtle glow casting rightwards into the box */
-  box-shadow: 3px 0 20px rgba(0, 242, 254, 0.25);
-  z-index: 2; /* Kept above the timer background */
+  background: #3d8bdf;
+  box-shadow: 2px 0 16px rgba(61, 139, 223, 0.3);
+  z-index: 2;
 }
 
-/* The moving background acting as a timer */
+/* ── Timer Background ── */
 .timer-bg {
   position: absolute;
-  top: 0;
-  left: 0;
+  top: 0; left: 0;
   height: 100%;
   width: 100%;
-  /* Slightly lighter premium gray for the timer */
-  background: #25272c;
+  background: rgba(255,255,255,0.035);
   z-index: 0;
 }
 
 @keyframes countdown {
-  0% {
-    width: 100%;
-  }
-  100% {
-    width: 0%;
-  }
+  0%   { width: 100%; }
+  100% { width: 0%; }
 }
 
-/* Animation will be applied via JS with dynamic duration */
 .timer-bg.animate {
   animation-name: countdown;
   animation-timing-function: linear;
   animation-fill-mode: forwards;
 }
 
+/* ── Content ── */
 .content {
   position: relative;
   z-index: 1;
-  padding: 22px 28px 22px 34px; /* Extra left padding to account for the accent bar */
+  padding: 20px 24px 20px 28px;
   display: flex;
   flex-direction: column;
+  gap: 6px;
+}
+
+.alert-main {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
   gap: 8px;
 }
 
-.header-text {
-  font-size: 21px;
-  font-weight: 500;
-  color: #9ba1a6; /* Modern subtle text color */
-  line-height: 1.4;
+.donor-name {
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 18px;
+  letter-spacing: 0px;
 }
 
-.donor-name {
-  color: #00f2fe;
-  font-weight: 800;
-  letter-spacing: 0.5px;
+.action-text {
+  font-size: 16px;
+  font-weight: 400;
+  color: rgba(255,255,255,0.5);
 }
 
 .donation-amount {
-  /* Solid vibrant color for amount */
-  color: #ffd166;
-  font-weight: 800;
-  background: rgba(255, 209, 102, 0.1);
-  padding: 2px 8px;
-  border-radius: 6px;
-  margin-left: 6px;
+  background: linear-gradient(90deg, #facc15, #ffedd5);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 900;
+  font-size: 40px;
+  letter-spacing: -1px;
+  line-height: 1;
+  margin-top: 2px;
+  margin-bottom: 6px;
 }
 
 .message-text {
-  font-size: 19px;
+  font-size: 15.5px;
   font-weight: 400;
-  color: #f1f2f3;
-  line-height: 1.6;
-  word-wrap: break-word;
+  color: rgba(255,255,255,0.85);
+  line-height: 1.5;
+  margin-top: 8px;
+  padding: 10px 14px;
+  background: rgba(255,255,255,0.035);
+  border-left: 3px solid rgba(255,255,255,0.15);
+  border-radius: 0 6px 6px 0;
+  font-style: italic;
 }
 
-/* Whale Donation Styles (>= 1,000,000) */
+/* ── Whale Alert ── */
 .whale-alert {
-  border-color: #ffd166;
-  box-shadow: 0 15px 40px rgba(255, 209, 102, 0.3);
+  border-color: rgba(255,209,102,0.2);
+  box-shadow: 0 12px 40px rgba(255,209,102,0.2);
 }
 
 .whale-alert::before {
-  background-color: #ffd166;
-  box-shadow: 3px 0 20px rgba(255, 209, 102, 0.4);
+  background: #ffd166;
+  box-shadow: 2px 0 18px rgba(255,209,102,0.45);
 }
 
 .sparkle-overlay {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  inset: 0;
   background-image: url('../assets/animation/sparkle.gif');
   background-size: cover;
   background-position: center;
   pointer-events: none;
   z-index: 5;
-  mix-blend-mode: screen; /* Blends beautifully with dark background */
-  opacity: 0.8; 
+  mix-blend-mode: screen;
+  opacity: 0.75;
   transition: opacity 0.5s ease-out;
 }
 
-/* Song Request Card above Alert */
+/* ── Song Request Card ── */
 .song-req-card {
   position: absolute;
   bottom: 100%;
   left: 50%;
   transform: translateX(-50%);
-  margin-bottom: 15px; /* Adds a nice gap above the alert box */
-  background: white;
-  padding: 8px 12px;
-  border-radius: 12px;
+  margin-bottom: 12px;
+  background: #0d0e12;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-left: 3px solid #3d8bdf;
+  border-radius: 0 10px 10px 0;
+  padding: 10px 14px 10px 12px;
   display: flex;
   align-items: center;
   gap: 12px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.5);
   z-index: 10;
-  min-width: 200px;
+  min-width: 220px;
 }
 
 .song-req-card img {
-  width: 48px;
-  height: 48px;
-  border-radius: 8px;
+  width: 44px;
+  height: 44px;
+  border-radius: 6px;
   object-fit: cover;
+  background: #1a1c22;
 }
 
 .song-req-info {
   display: flex;
   flex-direction: column;
+  gap: 2px;
 }
 
 .song-req-title {
-  color: #333;
+  color: #fff;
   font-weight: 700;
-  font-size: 14px;
+  font-size: 13px;
 }
 
 .song-req-artist {
-  color: #777;
-  font-size: 12px;
-  margin-top: 2px;
+  color: rgba(255,255,255,0.4);
+  font-size: 11px;
 }

@@ -1,40 +1,34 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
   <meta charset="UTF-8">
   <title>Donation Goal</title>
-  <link rel="stylesheet" href="/css/goal.css">
-  <script src="/socket.io/socket.io.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="css/goal.css" rel="stylesheet">
 </head>
 <body>
   <div class="goal-container" id="goal-container">
 
-    <div class="goal-body">
-
-      <!-- Left: Info -->
-      <div class="goal-info">
-        <span class="goal-label">Donation Goal</span>
-        <div class="goal-title" id="goal-title">Loading...</div>
-        <div class="goal-amounts">
-          <span id="goal-current">Rp 0</span>
-          <span class="goal-sep">/</span>
-          <span id="goal-target">Rp 0</span>
-        </div>
-      </div>
-
-      <!-- Right: Badge -->
-      <div class="goal-badge">
-        <span id="goal-percentage">0%</span>
-      </div>
-
+    <div class="goal-row-top">
+      <span class="goal-title" id="goal-title">Loading...</span>
+      <span class="goal-pct"   id="goal-pct">0%</span>
     </div>
 
-    <!-- Bottom bar -->
+    <div class="goal-amount-row">
+      <span class="goal-current" id="goal-current">Rp 0</span>
+      <span class="goal-sep">/</span>
+      <span class="goal-target"  id="goal-target">Rp 0</span>
+    </div>
+
+    <!-- Bar sits flush at bottom of card -->
     <div class="goal-bar-track">
-      <div class="goal-bar-fill" id="goal-bar-fill" style="width:0%"></div>
+      <div class="goal-bar-fill" id="goal-bar-fill"></div>
     </div>
 
   </div>
-  <script src="/js/goal/main.js"></script>
+
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+  <script type="module" src="js/goal/main.js"></script>
 </body>
 </html>

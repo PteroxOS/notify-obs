@@ -14,6 +14,14 @@ export class QueueManager {
     });
 
     this.socket.on('donation', (payload) => {
+      // Immediately push to media queue if there's a track
+      if (payload.mediaQueueTrack) {
+        localStorage.setItem('notify_play_song', JSON.stringify({
+          track: payload.mediaQueueTrack,
+          name: payload.name,
+          timestamp: Date.now()
+        }));
+      }
       this.queue.push(payload);
       this.processQueue();
     });
@@ -36,16 +44,9 @@ export class QueueManager {
     };
 
     const alertUI = new AlertUI(donation, duration, onEnd);
-    
     // Determine if it has a Song Share track
     if (donation.mediaQueueTrack) {
-      // Send signal to media.html to play the track via localStorage
-      localStorage.setItem('notify_play_song', JSON.stringify({
-        track: donation.mediaQueueTrack,
-        name: donation.name,
-        timestamp: Date.now()
-      }));
-      
+      // Song was already sent to media queue on 'donation' event receipt
       // Just show text alert visually (the media.html handles playing)
       alertUI.render('', false);
       alertUI.startVisualAlert();

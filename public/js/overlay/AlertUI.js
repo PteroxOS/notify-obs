@@ -30,10 +30,12 @@ export class AlertUI {
         ${isWhale ? `<div class="sparkle-overlay"></div>` : ''}
         ${!hasMedia ? `<div class="timer-bg" style="animation-duration: ${this.durationMs / 1000}s;"></div>` : ''}
         <div class="content">
-          <div class="header-text">
-            <span class="donor-name">${this.donation.name}</span> mengirim dukungan<span class="donation-amount">${formattedAmount}</span>
+          <div class="alert-main">
+            <span class="donor-name">${this.donation.name}</span>
+            <span class="action-text">memberikan dukungan</span>
           </div>
-          <div class="message-text">${this.donation.message || ''}</div>
+          <div class="donation-amount">${formattedAmount}</div>
+          ${this.donation.message ? `<div class="message-text">"${this.donation.message}"</div>` : ''}
         </div>
       </div>
     `;

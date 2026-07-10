@@ -84,7 +84,7 @@ export class MediaQueueManager {
         const total = track.duration || this.player.getDuration() || 0;
         this.ui.updateProgress(current, total);
       }
-    }, 1000);
+    }, 200);
   }
 
   onPlayerStateChange(event) {
