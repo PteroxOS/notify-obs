@@ -1,4 +1,4 @@
-import { IsString, IsNumber, IsOptional, IsNotEmpty, Min, IsUrl } from 'class-validator';
+import { IsString, IsNumber, IsOptional, IsNotEmpty, Min, IsUrl, IsBoolean } from 'class-validator';
 
 export class CreateDonationDto {
   @IsString()
@@ -17,8 +17,15 @@ export class CreateDonationDto {
   @IsOptional()
   message?: string;
 
-  @IsUrl({}, { message: 'URL YouTube/TikTok tidak valid' })
+  @IsUrl({}, { message: 'URL YouTube/TikTok/Instagram tidak valid' })
   @IsOptional()
   youtubeUrl?: string;
-}
 
+  @IsUrl({}, { message: 'URL Instagram tidak valid' })
+  @IsOptional()
+  instagramUrl?: string;
+
+  @IsBoolean()
+  @IsOptional()
+  isSongShare?: boolean;
+}

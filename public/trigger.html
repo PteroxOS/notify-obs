@@ -163,8 +163,8 @@
       <!-- TAB CONTENT: URL -->
       <div id="urlTab" class="tab-content active">
         <div class="form-group">
-          <label for="youtubeUrl">YouTube / TikTok URL</label>
-          <input type="url" id="youtubeUrl" placeholder="https://www.youtube.com/... or Spotify link">
+          <label for="youtubeUrl">YouTube / TikTok / Instagram URL</label>
+          <input type="url" id="youtubeUrl" placeholder="https://www.youtube.com/... , TikTok link, or Instagram Reel">
         </div>
       </div>
 
@@ -223,6 +223,12 @@
         return;
       }
 
+      if (query.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/)) {
+        ytUrlInput.value = query;
+        resultsContainer.innerHTML = '<div class="searching-text">URL YouTube terdeteksi! Siap dikirim sebagai Song Share.</div>';
+        return;
+      }
+
       resultsContainer.style.display = 'block';
       resultsContainer.innerHTML = '<div class="searching-text">Mencari lagu...</div>';
 
@@ -273,11 +279,22 @@
       const name = document.getElementById('name').value;
       const amount = parseInt(document.getElementById('amount').value, 10);
       const message = document.getElementById('message').value;
-      const youtubeUrl = document.getElementById('youtubeUrl').value;
+      const mediaUrl = document.getElementById('youtubeUrl').value;
       const statusDiv = document.getElementById('status');
 
       const payload = { streamKey, name, amount, message };
-      if (youtubeUrl) payload.youtubeUrl = youtubeUrl;
+      
+      const isSongShare = document.getElementById('searchTab').classList.contains('active');
+      if (isSongShare && mediaUrl) {
+        payload.youtubeUrl = mediaUrl;
+        payload.isSongShare = true;
+      } else if (mediaUrl) {
+        if (/instagram\.com/i.test(mediaUrl)) {
+          payload.instagramUrl = mediaUrl;
+        } else {
+          payload.youtubeUrl = mediaUrl;
+        }
+      }
 
       statusDiv.style.display = 'none';
 

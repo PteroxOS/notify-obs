@@ -1,6 +1,8 @@
-import { Injectable, UnauthorizedException, Logger } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
 import axios from 'axios';
 import * as cheerio from 'cheerio';
+import { CookieJar } from 'tough-cookie';
+import { wrapper } from 'axios-cookiejar-support';
 
 @Injectable()
 export class TikTokService {
@@ -8,54 +10,53 @@ export class TikTokService {
 
   async extractMp4(url: string): Promise<string> {
     try {
-      const cookieJoin = (arr: string[] = []) => Array.isArray(arr) ? arr.map((v) => v.split(";")[0]).join("; ") : "";
-      const csrfPick = (html: string) => html.match(/name="csrf_token"\s+value="([^"]+)"/i)?.[1] || null;
-
-      const resSession = await axios.get('https://savett.cc/en1/download', {
-          headers: { "User-Agent": "Mozilla/5.0 (Linux; Android 11; Mobile) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Mobile Safari/537.36", Accept: "text/html,*/*" },
-      });
-
-      const csrf = csrfPick(resSession.data);
-      const cookie = cookieJoin(resSession.headers["set-cookie"]);
-
-      if (!csrf || !cookie) throw new Error("Gagal ambil CSRF/Cookie");
-
-      const body = new URLSearchParams({ csrf_token: csrf, url });
-      const resPost = await axios.post('https://savett.cc/en1/download', body.toString(), {
+      this.logger.log(`Downloading TikTok Video...`);
+      const jar = new CookieJar();
+      const api = axios.create({
+          jar: jar,
+          withCredentials: true,
           headers: {
-              "User-Agent": "Mozilla/5.0 (Linux; Android 11; Mobile) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Mobile Safari/537.36",
-              "Content-Type": "application/x-www-form-urlencoded",
-              Origin: "https://savett.cc",
-              Referer: "https://savett.cc/en1/download",
-              Cookie: cookie,
-              Accept: "text/html,*/*",
-          },
-      });
+              'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0',
+              'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+          }
+      } as any);
+      wrapper(api);
+      
+      const htmlResponse = await api.get(url);
+      const $ = cheerio.load(htmlResponse.data);
+      
+      let scriptContent = $('#__UNIVERSAL_DATA_FOR_REHYDRATION__').html() || $('#SIGI_STATE').html();
+      if (!scriptContent) throw new Error('Script tag data tidak ditemukan (Captcha/IP Blocked).');
+      
+      const jsonData = JSON.parse(scriptContent);
+      
+      const defaultScope = jsonData?.__DEFAULT_SCOPE__;
+      const itemStruct = defaultScope?.["webapp.video-detail"]?.itemInfo?.itemStruct 
+                         || Object.values(jsonData.ItemModule || {})[0] as any;
 
-      const $ = cheerio.load(resPost.data);
-      const nowm: string[] = [];
+      if (!itemStruct) throw new Error('Struct video tidak ditemukan dalam JSON.');
 
-      $("#formatselect option").each((_: any, el: any) => {
-          const label = $(el).text().toLowerCase();
-          const raw = $(el).attr("value");
-          if (!raw) return;
-          try {
-              const json = JSON.parse(raw.replace(/&quot;/g, '"'));
-              if (!Array.isArray(json?.URL)) return;
-              if (label.includes("mp4") && !label.includes("watermark")) {
-                  nowm.push(...json.URL);
-              }
-          } catch {}
-      });
+      const videoData = itemStruct.video;
+      let hdNoWatermarkUrl = null;
 
-      if (nowm.length > 0) {
-          return nowm[0];
-      } else {
-          throw new Error("No MP4 found");
+      if (videoData.bitrateInfo && Array.isArray(videoData.bitrateInfo)) {
+          const bestQuality = videoData.bitrateInfo.sort((a: any, b: any) => b.Bitrate - a.Bitrate)[0];
+          
+          if (bestQuality) {
+              const urlList = bestQuality.PlayAddr?.UrlList || [];
+              hdNoWatermarkUrl = urlList.find((u: string) => u.includes('aweme/v1/play')) || urlList[urlList.length - 1];
+          }
       }
+      if (!hdNoWatermarkUrl) hdNoWatermarkUrl = videoData.playAddr;
+
+      if (!hdNoWatermarkUrl) {
+          throw new Error('Tidak dapat menemukan playAddr dari TikTok data');
+      }
+
+      return hdNoWatermarkUrl;
     } catch (e) {
-      this.logger.error("Savett Error: " + e.message);
-      throw new UnauthorizedException(e.message);
+      this.logger.error("TikTok Error: " + e.message);
+      throw new InternalServerErrorException(e.message);
     }
   }
 }

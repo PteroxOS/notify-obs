@@ -10,23 +10,22 @@ document.addEventListener('DOMContentLoaded', () => {
     return;
   }
 
-  // Set up socket connection
-  const socket = io({ query: { streamKey: streamKey } });
-
   // Initialize Media Queue
   const mediaQueueManager = new MediaQueueManager();
 
-  socket.on('connect', () => {
-    console.log('Connected to media overlay');
-  });
-
-  socket.on('donation', (donation) => {
-    if (donation.mediaQueueTrack) {
-      mediaQueueManager.addTrack(donation.mediaQueueTrack, donation.name);
+  // Listen for signals from overlay.html
+  window.addEventListener('storage', (e) => {
+    if (e.key === 'notify_play_song' && e.newValue) {
+      try {
+        const payload = JSON.parse(e.newValue);
+        if (payload.track) {
+          mediaQueueManager.addTrack(payload.track, payload.name);
+        }
+      } catch (err) {
+        console.error('Error parsing notify_play_song:', err);
+      }
     }
   });
 
-  socket.on('error', (err) => {
-    console.error('Socket error:', err);
-  });
+  console.log('Media overlay ready and waiting for signals from QueueManager');
 });

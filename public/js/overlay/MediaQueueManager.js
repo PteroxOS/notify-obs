@@ -100,4 +100,19 @@ export class MediaQueueManager {
       this.playNext();
     }
   }
+
+  pause() {
+    if (this.player && this.player.pauseVideo && this.isPlaying) {
+      this.player.pauseVideo();
+      // Optionally hide the UI temporarily or add a "Paused" state if desired
+      this.ui.container.style.opacity = '0.3';
+    }
+  }
+
+  resume() {
+    if (this.player && this.player.playVideo && this.isPlaying) {
+      this.player.playVideo();
+      this.ui.container.style.opacity = '1';
+    }
+  }
 }

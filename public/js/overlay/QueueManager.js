@@ -24,7 +24,9 @@ export class QueueManager {
     this.isPlaying = true;
     
     const donation = this.queue.shift();
-    const duration = 8; // 8 seconds visual alert duration
+    // Calculate duration based on amount: 1 second per Rp 2.000, min 8s, max 60s
+    // Example: Rp 50.000 = 25 seconds
+    const duration = Math.min(60, Math.max(8, Math.floor(donation.amount / 2000)));
     const playerId = 'media-' + Math.random().toString(36).substr(2, 9);
     
     const onEnd = () => {
@@ -36,13 +38,20 @@ export class QueueManager {
     
     // Determine if it has a Song Share track
     if (donation.mediaQueueTrack) {
+      // Send signal to media.html to play the track via localStorage
+      localStorage.setItem('notify_play_song', JSON.stringify({
+        track: donation.mediaQueueTrack,
+        name: donation.name,
+        timestamp: Date.now()
+      }));
+      
       // Just show text alert visually (the media.html handles playing)
       alertUI.render('', false);
       alertUI.startVisualAlert();
       return;
     }
     
-    // Determine provider for other media (e.g. TikTok)
+    // Determine provider for other media (e.g. TikTok, Instagram)
     const ytId = this.extractYouTubeId(donation.youtubeUrl);
     const isTikTok = /tiktok\.com/i.test(donation.youtubeUrl || '');
     
@@ -55,6 +64,12 @@ export class QueueManager {
       const provider = new TikTokProvider(playerId, donation.youtubeUrl, alertUI);
       alertUI.render(provider.getHtml(), true);
       provider.init();
+    } else if (donation.instagramUrl) {
+      import('./providers/InstagramProvider.js').then(({ InstagramProvider }) => {
+        const provider = new InstagramProvider(playerId, donation.instagramUrl, alertUI);
+        alertUI.render(provider.getHtml(), true);
+        provider.init();
+      });
     } else {
       // Text only alert
       alertUI.render('', false);

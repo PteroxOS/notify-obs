@@ -24,10 +24,12 @@ export class YouTubeProvider {
       this.alertUI.endAlertNow();
     }, 30000);
 
-    setTimeout(() => {
-      const player = new YT.Player(this.playerId, {
-        height: '100%',
-        width: '100%',
+    const checkYT = setInterval(() => {
+      if (window.YT && window.YT.Player) {
+        clearInterval(checkYT);
+        const player = new YT.Player(this.playerId, {
+          height: '100%',
+          width: '100%',
         videoId: this.ytId,
         playerVars: { 
           autoplay: 1, 
@@ -66,6 +68,7 @@ export class YouTubeProvider {
           }
         }
       });
+      }
     }, 100);
   }
 }

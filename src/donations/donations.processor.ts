@@ -21,8 +21,9 @@ export class DonationsProcessor extends WorkerHost {
     // Check if donation has Spotify or YouTube link for Media Queue
     let track: MediaTrack | null = null;
     const url = job.data.youtubeUrl; // user inputs any URL here
+    const isSongShare = job.data.isSongShare === true || job.data.isSongShare === 'true';
     
-    if (url) {
+    if (url && isSongShare) {
       if (this.youtubeService.isSpotifyTrack(url)) {
         track = await this.youtubeService.getTrackFromSpotify(url);
       } else {

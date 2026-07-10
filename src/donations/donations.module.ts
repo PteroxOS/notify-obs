@@ -5,6 +5,7 @@ import { DonationsProcessor } from './donations.processor';
 import { TikTokService } from './providers/tiktok.service';
 import { YouTubeService } from './providers/youtube.service';
 import { ProfanityService } from './providers/profanity.service';
+import { InstagramService } from './providers/instagram.service';
 import { RealtimeModule } from '../realtime/realtime.module';
 
 @Module({
@@ -15,6 +16,6 @@ import { RealtimeModule } from '../realtime/realtime.module';
     RealtimeModule,
   ],
   controllers: [DonationsController],
-  providers: [DonationsProcessor, TikTokService, YouTubeService, ProfanityService],
+  providers: [DonationsProcessor, TikTokService, YouTubeService, ProfanityService, InstagramService],
 })
 export class DonationsModule {}
