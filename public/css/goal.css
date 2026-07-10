@@ -1,186 +1,142 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700;800&display=swap');
 
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  background-color: transparent;
+  font-family: 'DM Sans', sans-serif;
+  background: transparent;
   overflow: hidden;
-  padding: 10px; /* So box-shadow isn't clipped */
+  padding: 6px; /* prevent shadow clip */
 }
 
+/* ── Outer shell ── */
 .goal-container {
-  display: inline-flex;
-  align-items: stretch;
-  position: relative;
-  border-radius: 16px;
-  overflow: hidden;
-  min-width: 380px;
-
-  /* ── Glassmorphism core ── */
-  background: linear-gradient(
-    135deg,
-    rgba(255, 109, 41, 0.18) 0%,
-    rgba(30, 16, 8, 0.55) 50%,
-    rgba(20, 12, 6, 0.65) 100%
-  );
-  backdrop-filter: blur(20px) saturate(160%);
-  -webkit-backdrop-filter: blur(20px) saturate(160%);
-
-  /* Glass border */
-  border: 1px solid rgba(255, 109, 41, 0.3);
-  border-top: 1px solid rgba(255, 255, 255, 0.18); /* Top highlight */
-  border-left: 1px solid rgba(255, 255, 255, 0.12); /* Left highlight */
-
-  /* Shadow */
-  box-shadow:
-    0 12px 36px rgba(0, 0, 0, 0.55),
-    0 2px 8px rgba(255, 109, 41, 0.15),
-    inset 0 1px 0 rgba(255, 255, 255, 0.12); /* Inner top shine */
-
-  padding-bottom: 4px; /* Space for progress bar */
-}
-
-/* Sheen / gloss layer on top */
-.goal-container::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 45%;
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.08) 0%,
-    transparent 100%
-  );
-  border-radius: 16px 16px 0 0;
-  pointer-events: none;
-  z-index: 5;
-}
-
-/* ── Left: big percentage ── */
-.goal-left {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 18px 24px;
-  flex-shrink: 0;
-  position: relative;
-  z-index: 10;
+  flex-direction: column;
+  min-width: 420px;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.7);
 }
 
-.goal-pct {
-  font-size: 38px;
-  font-weight: 800;
-  color: #FF6D29;
-  line-height: 1;
-  letter-spacing: -2px;
-  /* Text glow */
-  text-shadow: 0 0 18px rgba(255, 109, 41, 0.6), 0 2px 6px rgba(0, 0, 0, 0.5);
+/* ══════════════════════════════
+   TOP ROW — scoreboard header
+══════════════════════════════ */
+.goal-header {
+  display: flex;
+  align-items: stretch;
 }
 
-/* ── Vertical Divider ── */
-.goal-divider {
-  width: 1px;
-  margin: 14px 0;
-  flex-shrink: 0;
-  background: linear-gradient(
-    180deg,
-    transparent,
-    rgba(255, 109, 41, 0.45) 30%,
-    rgba(255, 109, 41, 0.45) 70%,
-    transparent
-  );
-  position: relative;
-  z-index: 10;
-}
-
-/* ── Right: info block ── */
-.goal-right {
+/* Left block: label + title */
+.goal-header-title {
+  flex: 1;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: 16px 20px 16px 18px;
-  gap: 7px;
-  flex: 1;
-  position: relative;
-  z-index: 10;
+  gap: 2px;
+  padding: 12px 18px;
+  background: #0f172a; /* Very dark navy */
+  border-bottom: none;
+}
+
+.goal-label {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  color: #4ade80; /* Neon green accent for the label badge */
+  text-transform: uppercase;
 }
 
 .goal-title {
-  font-size: 12px;
-  font-weight: 700;
-  color: rgba(255, 255, 255, 0.7);
+  font-size: 17px;
+  font-weight: 800;
+  color: #f8fafc;
   text-transform: uppercase;
-  letter-spacing: 2px;
+  letter-spacing: 0.5px;
+  line-height: 1.1;
 }
 
-/* Thin separator between title and amounts */
-.goal-separator {
-  height: 1px;
-  background: linear-gradient(90deg, rgba(255,109,41,0.4), transparent);
+/* Right block: big percentage in accent color */
+.goal-header-pct {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 22px;
+  background: #4ade80; /* Solid neon green block */
+  flex-shrink: 0;
+}
+
+.goal-pct {
+  font-size: 28px;
+  font-weight: 800;
+  color: #052e16; /* Very dark green text on green bg */
+  letter-spacing: -1px;
+  line-height: 1;
+}
+
+/* ══════════════════════════════
+   BOTTOM ROW — amounts + bar
+══════════════════════════════ */
+.goal-footer {
+  display: flex;
+  flex-direction: column;
+  background: #1e293b; /* Slightly lighter navy */
+  padding: 10px 18px 0;
+  gap: 10px;
 }
 
 .goal-amounts {
   display: flex;
   align-items: baseline;
-  gap: 6px;
+  gap: 8px;
 }
 
 #goal-current {
   font-size: 20px;
   font-weight: 800;
-  color: #ffffff;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+  color: #f8fafc;
 }
 
-.goal-slash {
+.goal-divider-dot {
   font-size: 14px;
-  color: rgba(255, 255, 255, 0.25);
-  font-weight: 500;
+  color: rgba(255,255,255,0.2);
 }
 
 #goal-target {
   font-size: 13px;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.45);
+  font-weight: 500;
+  color: rgba(255,255,255,0.4);
 }
 
-/* ── Bottom Progress Line ── */
-.goal-progress-track {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: rgba(255, 109, 41, 0.1);
-  z-index: 20;
+/* ── Progress bar ── */
+.goal-bar-track {
+  height: 6px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 0; /* flat edge, no rounding for scoreboard feel */
+  overflow: hidden;
 }
 
-.goal-progress-fill {
+.goal-bar-fill {
   height: 100%;
-  background: #FF6D29;
   width: 0%;
+  background: #4ade80; /* Match the pct block */
   transition: width 1.2s cubic-bezier(0.16, 1, 0.3, 1);
-  border-radius: 0 2px 2px 0;
-  box-shadow: 3px 0 14px rgba(255, 109, 41, 0.8);
+  box-shadow: 0 0 10px rgba(74, 222, 128, 0.5);
 }
 
-/* ── Completed state ── */
+/* ══════════════════════════════
+   Completed state
+══════════════════════════════ */
+.goal-completed .goal-header-pct {
+  background: #facc15; /* Gold when done */
+}
 .goal-completed .goal-pct {
-  color: #34d399;
-  text-shadow: 0 0 18px rgba(52, 211, 153, 0.6);
+  color: #422006;
 }
-.goal-completed .goal-progress-fill {
-  background: #10b981;
-  box-shadow: 3px 0 14px rgba(16, 185, 129, 0.8);
+.goal-completed .goal-bar-fill {
+  background: #facc15;
+  box-shadow: 0 0 10px rgba(250, 204, 21, 0.5);
 }
-.goal-completed .goal-divider {
-  background: linear-gradient(180deg, transparent, rgba(52,211,153,0.45) 30%, rgba(52,211,153,0.45) 70%, transparent);
-}
-.goal-completed .goal-separator {
-  background: linear-gradient(90deg, rgba(52,211,153,0.4), transparent);
+.goal-completed .goal-label {
+  color: #facc15;
 }

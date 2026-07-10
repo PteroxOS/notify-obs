@@ -8,33 +8,31 @@
 </head>
 <body>
   <div class="goal-container" id="goal-container">
-    
-    <!-- Left: Big Percentage -->
-    <div class="goal-left">
-      <span class="goal-pct" id="goal-percentage">0%</span>
-    </div>
 
-    <!-- Vertical Divider -->
-    <div class="goal-divider"></div>
-
-    <!-- Right: Title + amounts -->
-    <div class="goal-right">
-      <div class="goal-title" id="goal-title">Loading...</div>
-      <div class="goal-separator"></div>
-      <div class="goal-amounts">
-        <span id="goal-current">Rp 0</span>
-        <span class="goal-slash">/</span>
-        <span id="goal-target">Rp 0</span>
+    <!-- Top row: scoreboard header -->
+    <div class="goal-header">
+      <div class="goal-header-title">
+        <span class="goal-label">DONATION GOAL</span>
+        <span class="goal-title" id="goal-title">Loading...</span>
+      </div>
+      <div class="goal-header-pct">
+        <span class="goal-pct" id="goal-percentage">0%</span>
       </div>
     </div>
 
-    <!-- Bottom progress line -->
-    <div class="goal-progress-track">
-      <div class="goal-progress-fill" id="goal-bar-fill" style="width: 0%;"></div>
+    <!-- Bottom row: amounts + bar -->
+    <div class="goal-footer">
+      <div class="goal-amounts">
+        <span id="goal-current">Rp 0</span>
+        <span class="goal-divider-dot">·</span>
+        <span id="goal-target">Rp 0</span>
+      </div>
+      <div class="goal-bar-track">
+        <div class="goal-bar-fill" id="goal-bar-fill" style="width: 0%;"></div>
+      </div>
     </div>
 
   </div>
-
   <script src="/js/goal/main.js"></script>
 </body>
 </html>
