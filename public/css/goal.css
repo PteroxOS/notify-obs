@@ -9,96 +9,115 @@ body {
 .goal-container {
   width: 100%;
   max-width: 550px;
-  background: linear-gradient(135deg, rgba(15, 23, 42, 0.98), rgba(30, 41, 59, 0.98));
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 12px;
-  padding: 20px 24px;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1);
   position: relative;
   box-sizing: border-box;
+  padding: 10px;
 }
 
 .goal-header {
   display: flex;
   justify-content: space-between;
-  align-items: baseline;
-  margin-bottom: 14px;
+  align-items: flex-end;
+  margin-bottom: 8px;
 }
 
 .goal-title {
-  font-size: 16px;
-  font-weight: 700;
-  color: #f8fafc;
-  letter-spacing: 0.5px;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+  font-size: 20px;
+  font-weight: 900;
+  color: #ffffff;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  /* Strong black outline for readability on any background */
+  text-shadow: 
+    -2px -2px 0 #000,  
+     2px -2px 0 #000,
+    -2px  2px 0 #000,
+     2px  2px 0 #000,
+     0px  3px 5px rgba(0,0,0,0.8);
 }
 
 .goal-amounts {
-  font-size: 13px;
-  font-weight: 600;
-  color: #94a3b8;
-  background: rgba(0, 0, 0, 0.3);
-  padding: 4px 10px;
-  border-radius: 6px;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  font-size: 16px;
+  font-weight: 800;
+  color: #f1f5f9;
+  text-shadow: 
+    -1px -1px 0 #000,  
+     1px -1px 0 #000,
+    -1px  1px 0 #000,
+     1px  1px 0 #000,
+     0px  2px 4px rgba(0,0,0,0.8);
 }
 
 #goal-current {
   color: #38bdf8;
-  font-size: 15px;
-  font-weight: 800;
+  font-size: 18px;
+  font-weight: 900;
 }
 
 .goal-bar-bg {
   width: 100%;
-  height: 14px;
-  background: #0f172a;
-  border-radius: 8px;
+  height: 22px;
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: 4px;
+  border: 2px solid rgba(0, 0, 0, 0.9);
   position: relative;
-  box-shadow: inset 0 2px 4px rgba(0,0,0,0.8), 0 1px 0 rgba(255,255,255,0.05);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
 }
 
 .goal-bar-fill {
   height: 100%;
-  background: linear-gradient(90deg, #0284c7, #38bdf8);
-  border-radius: 8px;
+  background: #0284c7; /* Solid base color */
+  border-radius: 2px;
   width: 0%;
   transition: width 1s cubic-bezier(0.16, 1, 0.3, 1);
   position: relative;
+  box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.3), inset 0 -2px 4px rgba(0, 0, 0, 0.4);
 }
 
-/* Glowing tip at the end of the progress bar */
-.goal-bar-fill::after {
+/* Striped overlay pattern often used in esports/gaming */
+.goal-bar-fill::before {
   content: '';
   position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  width: 20px;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6));
-  border-radius: 0 8px 8px 0;
-  box-shadow: 4px 0 12px rgba(56, 189, 248, 0.8);
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-image: linear-gradient(
+    -45deg, 
+    rgba(255, 255, 255, 0.15) 25%, 
+    transparent 25%, 
+    transparent 50%, 
+    rgba(255, 255, 255, 0.15) 50%, 
+    rgba(255, 255, 255, 0.15) 75%, 
+    transparent 75%, 
+    transparent
+  );
+  background-size: 20px 20px;
+  animation: moveStripes 1.5s linear infinite;
+}
+
+@keyframes moveStripes {
+  0% { background-position: 0 0; }
+  100% { background-position: 20px 20px; }
 }
 
 .goal-percentage {
   position: absolute;
-  right: 24px;
-  bottom: 8px;
-  font-size: 11px;
-  font-weight: 700;
-  color: #cbd5e1;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+  right: 15px;
+  bottom: -20px;
+  font-size: 12px;
+  font-weight: 800;
+  color: #fff;
+  text-shadow: 
+    -1px -1px 0 #000,  
+     1px -1px 0 #000,
+    -1px  1px 0 #000,
+     1px  1px 0 #000;
   opacity: 0;
   transition: opacity 0.3s;
 }
 
 /* For completed goal */
 .goal-completed .goal-bar-fill {
-  background: linear-gradient(90deg, #059669, #34d399);
-}
-
-.goal-completed .goal-bar-fill::after {
-  box-shadow: 4px 0 12px rgba(52, 211, 153, 0.8);
+  background: #10b981;
 }
 
 .goal-completed #goal-current {
