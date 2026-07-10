@@ -1,10 +1,10 @@
-@import url('https://fonts.googleapis.com/css2?family=Inconsolata:wght@500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&display=swap');
 
 body {
   margin: 0;
   padding: 0;
   overflow: hidden;
-  font-family: 'Inconsolata', 'Courier New', Courier, monospace;
+  font-family: 'Space Grotesk', sans-serif;
   background-color: transparent;
 }
 
@@ -14,77 +14,91 @@ body {
   position: relative;
   box-sizing: border-box;
   
-  /* Retro / Saweria Style Background */
-  background: #f5b041;
-  border: 2px solid #222;
-  padding: 8px 14px;
-  box-shadow: 5px 5px 0px rgba(34, 34, 34, 1);
+  /* Neo-Brutalism Style */
+  background: #ffffff;
+  border: 3px solid #000000;
+  border-radius: 12px;
+  padding: 12px 18px;
+  /* Hard offset shadow with a fun color */
+  box-shadow: 6px 6px 0px #6366f1; /* Indigo shadow */
   text-align: center;
+  transition: transform 0.2s ease;
 }
 
 .goal-title {
   font-size: 18px;
   font-weight: 700;
-  color: #222;
+  color: #000000;
   text-transform: uppercase;
-  letter-spacing: 0px;
-  margin-bottom: 6px;
-}
-
-.goal-amounts {
-  font-size: 16px;
-  font-weight: 700;
-  color: #222;
-}
-
-#goal-current {
-  color: #222;
-  font-size: 16px;
-  font-weight: 700;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
 }
 
 .goal-bar-bg {
   width: 100%;
-  height: 18px;
-  background: #e59866; /* Slightly darker orange/yellow for contrast */
-  border: 1px solid #222;
+  height: 24px;
+  background: #f1f5f9; /* Light grey */
+  border: 2px solid #000000;
+  border-radius: 20px; /* Pill shape */
   position: relative;
   overflow: hidden;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
 }
 
 .goal-bar-fill {
   height: 100%;
-  background: #3498db; /* Blue */
+  background: #fde047; /* Cyber Yellow */
   width: 0%;
   transition: width 1s cubic-bezier(0.16, 1, 0.3, 1);
   position: relative;
-  border-right: 1px solid #222;
+  border-right: 2px solid #000000;
 }
 
-/* Striped overlay pattern */
+/* Polka dot pattern for the fill instead of stripes */
 .goal-bar-fill::before {
   content: '';
   position: absolute;
   top: 0; left: 0; right: 0; bottom: 0;
-  background-image: linear-gradient(
-    -45deg, 
-    rgba(255, 255, 255, 0.2) 25%, 
-    transparent 25%, 
-    transparent 50%, 
-    rgba(255, 255, 255, 0.2) 50%, 
-    rgba(255, 255, 255, 0.2) 75%, 
-    transparent 75%, 
-    transparent
-  );
-  background-size: 12px 12px;
+  background-image: radial-gradient(#000000 15%, transparent 16%), radial-gradient(#000000 15%, transparent 16%);
+  background-size: 14px 14px;
+  background-position: 0 0, 7px 7px;
+  opacity: 0.15;
+}
+
+.goal-amounts {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #000000;
+}
+
+#goal-current {
+  color: #000000;
+  font-size: 16px;
+  font-weight: 700;
+  background: #fde047; /* Highlight the current amount */
+  padding: 2px 8px;
+  border-radius: 6px;
+  border: 1.5px solid #000;
+}
+
+#goal-target {
+  opacity: 0.8;
 }
 
 .goal-percentage {
-  display: none; /* Hide percentage text to match saweria */
+  display: none; 
 }
 
 /* For completed goal */
 .goal-completed .goal-bar-fill {
-  background: #27ae60;
+  background: #10b981; /* Emerald green when finished */
+}
+
+.goal-completed #goal-current {
+  background: #10b981;
+  color: #fff;
 }
