@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -7,40 +7,32 @@ body {
   background: transparent;
   overflow: hidden;
   padding: 6px;
+  /* Wrap to content so OBS browser source width doesn't stretch card */
+  display: inline-block;
 }
 
 /* ─── Card Shell ─── */
 .goal-container {
-  min-width: 460px;
-  border-radius: 14px;
+  display: inline-flex;
+  flex-direction: column;
+  border-radius: 12px;
   overflow: hidden;
-  /* Dark card with a very subtle warm tint */
-  background: #16100a;
+  background: #111111;
   box-shadow:
-    0 16px 48px rgba(0,0,0,0.85),
-    0 0 0 1px rgba(255,255,255,0.06);
+    0 8px 32px rgba(0,0,0,0.9),
+    0 0 0 1px rgba(255,255,255,0.07);
 }
 
 /* ─── Main body row ─── */
 .goal-body {
   display: flex;
   align-items: center;
-  gap: 14px;
-  padding: 14px 18px 14px 0;
+  gap: 20px;
+  padding: 14px 14px 14px 18px;
 }
 
-/* Left orange accent bar */
-.goal-accent-bar {
-  width: 4px;
-  align-self: stretch;
-  border-radius: 0 4px 4px 0;
-  background: linear-gradient(180deg, #fb923c, #ea580c);
-  flex-shrink: 0;
-}
-
-/* ─── Text info ─── */
+/* Left: text info */
 .goal-info {
-  flex: 1;
   display: flex;
   flex-direction: column;
   gap: 3px;
@@ -49,30 +41,30 @@ body {
 .goal-label {
   font-size: 9px;
   font-weight: 700;
-  letter-spacing: 3px;
-  color: #f97316; /* Orange */
+  letter-spacing: 2.5px;
+  color: #f97316;
   text-transform: uppercase;
 }
 
 .goal-title {
-  font-size: 19px;
+  font-size: 18px;
   font-weight: 800;
-  color: #fff;
-  letter-spacing: -0.4px;
-  line-height: 1.15;
+  color: #ffffff;
+  white-space: nowrap;
+  letter-spacing: -0.3px;
 }
 
 .goal-amounts {
   display: flex;
   align-items: baseline;
   gap: 6px;
-  margin-top: 1px;
+  margin-top: 2px;
 }
 
 #goal-current {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 700;
-  color: #fff;
+  color: #ffffff;
 }
 
 .goal-sep {
@@ -86,32 +78,33 @@ body {
   color: rgba(255,255,255,0.35);
 }
 
-/* ─── Percentage badge ─── */
+/* Right: percentage badge — sits right next to text, no gap */
 .goal-badge {
   flex-shrink: 0;
-  margin-right: 4px;
-  padding: 10px 16px;
+  padding: 12px 18px;
   border-radius: 10px;
-  /* Soft warm orange gradient */
-  background: linear-gradient(135deg, #fb923c 0%, #ea580c 100%);
+  background: linear-gradient(145deg, #fb923c 0%, #ea580c 100%);
   box-shadow:
-    0 4px 16px rgba(249,115,22,0.45),
-    inset 0 1px 0 rgba(255,255,255,0.2);
+    0 4px 14px rgba(249,115,22,0.5),
+    inset 0 1px 0 rgba(255,255,255,0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .goal-badge span {
-  font-size: 24px;
+  font-size: 26px;
   font-weight: 800;
-  color: #fff;
+  color: #ffffff;
   letter-spacing: -1px;
   line-height: 1;
-  text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+  text-shadow: 0 1px 4px rgba(0,0,0,0.3);
 }
 
 /* ─── Progress bar ─── */
 .goal-bar-track {
-  height: 5px;
-  background: rgba(255,255,255,0.05);
+  height: 4px;
+  background: rgba(255,255,255,0.06);
 }
 
 .goal-bar-fill {
@@ -119,19 +112,16 @@ body {
   width: 0%;
   background: linear-gradient(90deg, #fb923c, #f97316);
   transition: width 1.2s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 0 10px rgba(249,115,22,0.5);
+  box-shadow: 2px 0 10px rgba(249,115,22,0.6);
 }
 
 /* ─── Completed ─── */
-.goal-completed .goal-accent-bar {
-  background: linear-gradient(180deg, #4ade80, #16a34a);
-}
 .goal-completed .goal-label { color: #4ade80; }
 .goal-completed .goal-badge {
-  background: linear-gradient(135deg, #4ade80, #16a34a);
-  box-shadow: 0 4px 16px rgba(74,222,128,0.4), inset 0 1px 0 rgba(255,255,255,0.2);
+  background: linear-gradient(145deg, #4ade80, #16a34a);
+  box-shadow: 0 4px 14px rgba(74,222,128,0.45), inset 0 1px 0 rgba(255,255,255,0.2);
 }
 .goal-completed .goal-bar-fill {
   background: linear-gradient(90deg, #4ade80, #16a34a);
-  box-shadow: 0 0 10px rgba(74,222,128,0.5);
+  box-shadow: 2px 0 10px rgba(74,222,128,0.6);
 }
