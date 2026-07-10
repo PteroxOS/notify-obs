@@ -17,7 +17,9 @@ export class AlertUI {
 
     this.el.innerHTML = `
       ${providerHtml}
-      ${song ? `
+      ${
+        song
+          ? `
       <div class="song-req-card">
         <img src="${song.thumbnail}" alt="Cover">
         <div class="song-req-info">
@@ -25,7 +27,9 @@ export class AlertUI {
           <div class="song-req-artist">${song.artist}</div>
         </div>
       </div>
-      ` : ''}
+      `
+          : ''
+      }
       <div class="alert-box${isWhale ? ' whale-alert' : ''}">
         ${isWhale ? `<div class="sparkle-overlay"></div>` : ''}
         ${!hasMedia ? `<div class="timer-bg" style="animation-duration: ${this.durationMs / 1000}s;"></div>` : ''}
@@ -47,6 +51,23 @@ export class AlertUI {
       this.audio.volume = 0.5;
       this.audio.currentTime = 0;
       this.audio.play().catch((e) => console.log('Audio autoplay blocked', e));
+    }
+
+    // TTS for donations >= 100k
+    if (this.donation.amount >= 100000 && this.donation.message) {
+      setTimeout(() => {
+        // Truncate message to avoid Google TTS URL length limit
+        const safeMessage = this.donation.message.substring(0, 150);
+        const textToSpeak = encodeURIComponent(
+          `${this.donation.name} baru saja memberikan ${this.donation.amount} rupiah. ${safeMessage}`
+        );
+
+        // Menggunakan Google Translate TTS (Suara embak Google yang natural)
+        const ttsUrl = `https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=id&q=${textToSpeak}`;
+        const ttsAudio = new Audio(ttsUrl);
+        ttsAudio.volume = 1.0;
+        ttsAudio.play().catch((e) => console.log('TTS playback blocked', e));
+      }, 800); // Delay sedikit biar suara alert awal selesai duluan
     }
 
     // Show the container immediately
