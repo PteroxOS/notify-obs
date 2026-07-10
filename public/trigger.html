@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trigger Fake Donation</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f9;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      width: 460px;
+    }
+    h2 { margin-top: 0; color: #333; }
+    .form-group { margin-bottom: 15px; }
+    label { display: block; margin-bottom: 5px; font-weight: bold; }
+    input[type="text"], input[type="number"], input[type="url"], textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    
+    /* Tabs */
+    .tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+      border-bottom: 2px solid #eee;
+      padding-bottom: 10px;
+    }
+    .tab {
+      padding: 8px 16px;
+      cursor: pointer;
+      border-radius: 20px;
+      background: #eee;
+      font-weight: bold;
+      color: #555;
+      font-size: 14px;
+    }
+    .tab.active {
+      background: #007bff;
+      color: white;
+    }
+    
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    /* Search Results */
+    #songSearchResults {
+      max-height: 300px;
+      overflow-y: auto;
+      margin-top: 10px;
+      background: #1a1e23; /* Dark background like image */
+      border-radius: 8px;
+      padding: 8px;
+      display: none;
+    }
+    .song-result {
+      display: flex;
+      align-items: center;
+      padding: 10px;
+      border-radius: 6px;
+      margin-bottom: 6px;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all 0.2s;
+    }
+    .song-result:hover { background: #2a2e35; }
+    .song-result.selected { border-color: #3ba8ff; background: #243545; }
+    
+    .song-result img {
+      width: 50px;
+      height: 50px;
+      border-radius: 4px;
+      object-fit: cover;
+    }
+    .song-details {
+      margin-left: 12px;
+      flex: 1;
+      overflow: hidden;
+    }
+    .song-title {
+      font-weight: bold;
+      color: #fff;
+      font-size: 14px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .song-artist {
+      font-size: 12px;
+      color: #a3a6aa;
+      margin-top: 4px;
+    }
+    .song-duration {
+      font-size: 12px;
+      color: #a3a6aa;
+      margin-left: 10px;
+    }
+    .searching-text { color: #888; font-size: 13px; text-align: center; padding: 10px; }
+
+    button[type="submit"] {
+      width: 100%;
+      padding: 12px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 16px;
+      cursor: pointer;
+      font-weight: bold;
+      margin-top: 15px;
+    }
+    button[type="submit"]:hover { background: #0056b3; }
+    
+    #status {
+      margin-top: 15px;
+      padding: 10px;
+      border-radius: 4px;
+      display: none;
+    }
+    .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+    .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Send Fake Donation</h2>
+    
+    <!-- TABS -->
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab('urlTab')">URL Media</div>
+      <div class="tab" onclick="switchTab('searchTab')">Song Share</div>
+    </div>
+
+    <form id="donationForm">
+      <div class="form-group">
+        <label for="streamKey">Stream Key</label>
+        <input type="text" id="streamKey" required>
+      </div>
+      <div class="form-group">
+        <label for="name">Donor Name</label>
+        <input type="text" id="name" required value="John Doe">
+      </div>
+      <div class="form-group">
+        <label for="amount">Amount (IDR, min 20000)</label>
+        <input type="number" id="amount" value="50000" min="20000">
+      </div>
+      
+      <!-- TAB CONTENT: URL -->
+      <div id="urlTab" class="tab-content active">
+        <div class="form-group">
+          <label for="youtubeUrl">YouTube / TikTok URL</label>
+          <input type="url" id="youtubeUrl" placeholder="https://www.youtube.com/... or Spotify link">
+        </div>
+      </div>
+
+      <!-- TAB CONTENT: SONG SEARCH -->
+      <div id="searchTab" class="tab-content">
+        <div class="form-group">
+          <label for="songSearchInput">Cari Lagu</label>
+          <input type="text" id="songSearchInput" placeholder="Ketik judul lagu di sini...">
+          <div id="songSearchResults"></div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="message">Message</label>
+        <textarea id="message" rows="3">Kesuksesan bukan tentang siapa yang paling berbakat, melainkan siapa yang tetap bertahan ketika orang lain memilih menyerah</textarea>
+      </div>
+      
+      <button type="submit">Trigger Donation</button>
+    </form>
+    <div id="status"></div>
+  </div>
+
+  <script>
+    let searchTimeout = null;
+    const searchInput = document.getElementById('songSearchInput');
+    const resultsContainer = document.getElementById('songSearchResults');
+    const ytUrlInput = document.getElementById('youtubeUrl');
+
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      
+      event.target.classList.add('active');
+      document.getElementById(tabId).classList.add('active');
+      
+      // Clear URL if switching tabs to avoid confusion
+      if (tabId === 'urlTab') {
+        resultsContainer.style.display = 'none';
+      }
+    }
+
+    function formatTime(seconds) {
+      const m = Math.floor(seconds / 60);
+      const s = Math.floor(seconds % 60);
+      return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+    }
+
+    // Debounce search
+    searchInput.addEventListener('input', (e) => {
+      const query = e.target.value.trim();
+      
+      if (searchTimeout) clearTimeout(searchTimeout);
+      
+      if (!query) {
+        resultsContainer.style.display = 'none';
+        return;
+      }
+
+      resultsContainer.style.display = 'block';
+      resultsContainer.innerHTML = '<div class="searching-text">Mencari lagu...</div>';
+
+      searchTimeout = setTimeout(async () => {
+        try {
+          const res = await fetch('/test-donation/search-song?q=' + encodeURIComponent(query));
+          const data = await res.json();
+          
+          if (!data || data.length === 0) {
+            resultsContainer.innerHTML = '<div class="searching-text">Lagu tidak ditemukan</div>';
+            return;
+          }
+
+          resultsContainer.innerHTML = '';
+          data.forEach(song => {
+            const div = document.createElement('div');
+            div.className = 'song-result';
+            div.innerHTML = `
+              <img src="${song.thumbnail}" alt="cover">
+              <div class="song-details">
+                <div class="song-title">${song.title}</div>
+                <div class="song-artist">${song.artist}</div>
+              </div>
+              <div class="song-duration">${formatTime(song.duration)}</div>
+            `;
+            
+            div.addEventListener('click', () => {
+              // Remove selected class from others
+              document.querySelectorAll('.song-result').forEach(el => el.classList.remove('selected'));
+              div.classList.add('selected');
+              
+              // Set the hidden youtube URL
+              ytUrlInput.value = 'https://youtube.com/watch?v=' + song.ytId;
+            });
+            
+            resultsContainer.appendChild(div);
+          });
+        } catch (err) {
+          resultsContainer.innerHTML = '<div class="searching-text">Gagal mencari lagu.</div>';
+        }
+      }, 600); // 600ms debounce
+    });
+
+    document.getElementById('donationForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const streamKey = document.getElementById('streamKey').value;
+      const name = document.getElementById('name').value;
+      const amount = parseInt(document.getElementById('amount').value, 10);
+      const message = document.getElementById('message').value;
+      const youtubeUrl = document.getElementById('youtubeUrl').value;
+      const statusDiv = document.getElementById('status');
+
+      const payload = { streamKey, name, amount, message };
+      if (youtubeUrl) payload.youtubeUrl = youtubeUrl;
+
+      statusDiv.style.display = 'none';
+
+      try {
+        const response = await fetch('/test-donation', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        if (response.ok) {
+          statusDiv.textContent = '✅ Successfully triggered donation!';
+          statusDiv.className = 'success';
+          // Reset form somewhat
+          ytUrlInput.value = '';
+          searchInput.value = '';
+          resultsContainer.style.display = 'none';
+          document.querySelectorAll('.song-result').forEach(el => el.classList.remove('selected'));
+        } else {
+          const data = await response.json();
+          statusDiv.textContent = `❌ Error: ${data.message || response.statusText}`;
+          statusDiv.className = 'error';
+        }
+        statusDiv.style.display = 'block';
+      } catch (err) {
+        statusDiv.textContent = `❌ Network Error: ${err.message}`;
+        statusDiv.className = 'error';
+        statusDiv.style.display = 'block';
+      }
+    });
+  </script>
+</body>
+</html>

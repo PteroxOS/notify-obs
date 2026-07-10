@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Media Queue Overlay</title>
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link href="css/media-queue.css" rel="stylesheet" />
+    <style>
+      body, html { margin: 0; padding: 0; overflow: hidden; background: transparent; }
+      /* Force widget to be positioned relatively instead of absolute since it's its own browser source */
+      #media-queue-container {
+        position: relative;
+        top: 0;
+        right: 0;
+        margin: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Hidden player for songs -->
+    <div id="hidden-player" style="display: none;"></div>
+    
+    <!-- Media Queue Widget -->
+    <div id="media-queue-container"></div>
+    
+    <!-- Load Socket.io & YouTube IFrame API -->
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+    <script src="https://www.youtube.com/iframe_api"></script>
+    <script type="module" src="js/overlay/media-main.js"></script>
+  </body>
+</html>
