@@ -2,20 +2,18 @@ body {
   margin: 0;
   padding: 0;
   overflow: hidden;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   background-color: transparent;
 }
 
 .goal-container {
   width: 100%;
-  max-width: 600px;
-  background: rgba(20, 20, 20, 0.7);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 16px;
-  padding: 16px 20px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  max-width: 550px;
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.98), rgba(30, 41, 59, 0.98));
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 20px 24px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1);
   position: relative;
   box-sizing: border-box;
 }
@@ -23,74 +21,86 @@ body {
 .goal-header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-end;
-  margin-bottom: 12px;
-  color: white;
+  align-items: baseline;
+  margin-bottom: 14px;
 }
 
 .goal-title {
-  font-size: 18px;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  font-size: 16px;
+  font-weight: 700;
+  color: #f8fafc;
+  letter-spacing: 0.5px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
 }
 
 .goal-amounts {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
-  color: #a0a0a0;
+  color: #94a3b8;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 #goal-current {
-  color: #4ade80;
-  font-size: 16px;
+  color: #38bdf8;
+  font-size: 15px;
   font-weight: 800;
 }
 
 .goal-bar-bg {
   width: 100%;
-  height: 24px;
-  background: rgba(0, 0, 0, 0.5);
-  border-radius: 12px;
-  overflow: hidden;
+  height: 14px;
+  background: #0f172a;
+  border-radius: 8px;
   position: relative;
-  box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.8), 0 1px 0 rgba(255,255,255,0.05);
 }
 
 .goal-bar-fill {
   height: 100%;
-  background: linear-gradient(90deg, #3b82f6, #8b5cf6, #ec4899);
-  border-radius: 12px;
+  background: linear-gradient(90deg, #0284c7, #38bdf8);
+  border-radius: 8px;
   width: 0%;
-  transition: width 1.5s cubic-bezier(0.25, 1, 0.5, 1);
+  transition: width 1s cubic-bezier(0.16, 1, 0.3, 1);
   position: relative;
-  overflow: hidden;
 }
 
-.goal-bar-glow {
+/* Glowing tip at the end of the progress bar */
+.goal-bar-fill::after {
+  content: '';
   position: absolute;
   top: 0;
-  left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
-  animation: shine 3s infinite linear;
+  width: 20px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6));
+  border-radius: 0 8px 8px 0;
+  box-shadow: 4px 0 12px rgba(56, 189, 248, 0.8);
 }
 
 .goal-percentage {
   position: absolute;
-  right: 20px;
-  bottom: -24px;
-  font-size: 14px;
-  font-weight: 800;
-  color: #fff;
-  text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+  right: 24px;
+  bottom: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #cbd5e1;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.8);
   opacity: 0;
   transition: opacity 0.3s;
 }
 
-@keyframes shine {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
+/* For completed goal */
+.goal-completed .goal-bar-fill {
+  background: linear-gradient(90deg, #059669, #34d399);
+}
+
+.goal-completed .goal-bar-fill::after {
+  box-shadow: 4px 0 12px rgba(52, 211, 153, 0.8);
+}
+
+.goal-completed #goal-current {
+  color: #34d399;
 }

@@ -32,12 +32,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     fillEl.style.width = displayPct + '%';
     
     // Add pulsing effect if goal reached
+    const container = document.querySelector('.goal-container');
     if (pct >= 100) {
-      fillEl.style.boxShadow = '0 0 20px #4ade80';
-      fillEl.style.background = 'linear-gradient(90deg, #10b981, #34d399)';
+      container.classList.add('goal-completed');
     } else {
-      fillEl.style.boxShadow = 'none';
-      fillEl.style.background = 'linear-gradient(90deg, #3b82f6, #8b5cf6, #ec4899)';
+      container.classList.remove('goal-completed');
     }
   };
 
