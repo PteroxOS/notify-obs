@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Running Text</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@700&display=swap');
+
+    body {
+      margin: 0;
+      padding: 0;
+      background: transparent;
+      overflow: hidden;
+      font-family: 'Space Mono', monospace;
+    }
+
+    .ticker-wrap {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      height: 40px;
+      background-color: #f59e0b; /* Orange background */
+      border-top: 2px solid #111;
+      border-bottom: 2px solid #111;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      white-space: nowrap;
+    }
+
+    .ticker-content {
+      display: inline-block;
+      white-space: nowrap;
+      padding-left: 100%;
+      animation: marquee 25s linear infinite;
+      color: #111;
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+
+    @keyframes marquee {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-100%); }
+    }
+
+    .separator {
+      margin: 0 20px;
+      opacity: 0.7;
+    }
+    
+    .empty-state {
+      padding-left: 20px;
+      font-style: italic;
+    }
+  </style>
+  <script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+
+  <div class="ticker-wrap">
+    <div class="ticker-content" id="tickerContent">
+      <!-- Generated via JS -->
+    </div>
+  </div>
+
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const streamKey = urlParams.get('key');
+    
+    const socket = io({
+      query: { streamKey: streamKey || 'local' }
+    });
+    
+    const tickerContent = document.getElementById('tickerContent');
+
+    function formatRupiah(amount) {
+      return new Intl.NumberFormat('id-ID', {
+        style: 'currency',
+        currency: 'IDR',
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+      }).format(amount);
+    }
+
+    function renderTicker(state) {
+      const { customMessage, recentDonations } = state;
+      
+      let htmlString = '';
+      
+      if (recentDonations && recentDonations.length > 0) {
+        const parts = [];
+        recentDonations.forEach(d => {
+          parts.push(`${d.name}: ${formatRupiah(d.amount)}`);
+          if (customMessage) {
+            parts.push(customMessage);
+          }
+        });
+        
+        // Join with separator
+        htmlString = parts.join('<span class="separator">|</span>');
+      } else {
+        htmlString = customMessage ? `<span class="empty-state">${customMessage}</span>` : '<span class="empty-state">Belum ada donasi...</span>';
+      }
+      
+      tickerContent.innerHTML = htmlString;
+      
+      // Reset animation to ensure smooth restart if content changes drastically
+      tickerContent.style.animation = 'none';
+      tickerContent.offsetHeight; /* trigger reflow */
+      tickerContent.style.animation = null; 
+    }
+
+    // Initial fetch
+    fetch('/ticker/state')
+      .then(r => r.json())
+      .then(state => {
+        renderTicker(state);
+      });
+
+    // Realtime update
+    socket.on('ticker:update', (state) => {
+      renderTicker(state);
+    });
+  </script>
+
+</body>
+</html>

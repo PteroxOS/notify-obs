@@ -20,6 +20,21 @@ export class AlertUI {
       ? this.donation.message.replace(/\[([a-zA-Z0-9_-]+)\]/g, '<img src="assets/emoji/$1.png" class="custom-emoji">') 
       : '';
 
+    let messageHtml = '';
+    if (this.donation.voiceNoteUrl) {
+      messageHtml = `
+        <div class="vn-ui">
+          <div class="vn-icon">🎤</div>
+          <div class="vn-waveform">
+            <span></span><span></span><span></span><span></span><span></span>
+          </div>
+          <div class="vn-text">Voice Note</div>
+        </div>
+      `;
+    } else if (displayMessage) {
+      messageHtml = `<div class="message-text">"${displayMessage}"</div>`;
+    }
+
     this.el.innerHTML = `
       ${providerHtml}
       ${
@@ -37,14 +52,14 @@ export class AlertUI {
       }
       <div class="alert-box${isWhale ? ' whale-alert' : ''}">
         ${isWhale ? `<div class="sparkle-overlay"></div>` : ''}
-        ${!hasMedia ? `<div class="timer-bg" style="animation-duration: ${this.durationMs / 1000}s;"></div>` : ''}
+        ${!hasMedia && !this.donation.voiceNoteUrl ? `<div class="timer-bg" style="animation-duration: ${this.durationMs / 1000}s;"></div>` : ''}
         <div class="content">
           <div class="alert-main">
             <span class="donor-name">${this.donation.name}</span>
             <span class="action-text">memberikan dukungan</span>
           </div>
           <div class="donation-amount">${formattedAmount}</div>
-          ${displayMessage ? `<div class="message-text">"${displayMessage}"</div>` : ''}
+          ${messageHtml}
         </div>
       </div>
     `;
@@ -58,9 +73,18 @@ export class AlertUI {
       this.audio.play().catch((e) => console.log('Audio autoplay blocked', e));
     }
 
-    // TTS for donations >= 100k
-    if (this.donation.amount >= 100000 && this.donation.message) {
-      setTimeout(() => {
+    // TTS / Voice Note
+    setTimeout(() => {
+      if (this.donation.voiceNoteUrl) {
+        // Play uploaded Voice Note
+        const vnAudio = new Audio(this.donation.voiceNoteUrl);
+        vnAudio.volume = 1.0;
+        vnAudio.addEventListener('ended', () => {
+          // Tutup alert otomatis pas VN kelar
+          this.endAlertNow();
+        });
+        vnAudio.play().catch((e) => console.log('Voice Note playback blocked', e));
+      } else if (this.donation.amount >= 100000 && this.donation.message) {
         // Strip emoji shortcodes before speaking so the robot doesn't read "[emot-merah]"
         const cleanMessageForTTS = this.donation.message.replace(/\[([a-zA-Z0-9_-]+)\]/g, '').trim();
         // Truncate message to avoid Google TTS URL length limit
@@ -74,8 +98,8 @@ export class AlertUI {
         const ttsAudio = new Audio(ttsUrl);
         ttsAudio.volume = 1.0;
         ttsAudio.play().catch((e) => console.log('TTS playback blocked', e));
-      }, 800); // Delay sedikit biar suara alert awal selesai duluan
-    }
+      }
+    }, 800); // Delay sedikit biar suara alert awal selesai duluan
 
     // Show the container immediately
     setTimeout(() => {
@@ -109,6 +133,12 @@ export class AlertUI {
   endAlertNow() {
     if (this.alertTimeout) clearTimeout(this.alertTimeout);
     this.el.classList.remove('show');
+
+    // Auto-delete Voice Note from server after playing
+    if (this.donation.voiceNoteUrl) {
+      fetch('/test-donation/voice-note?path=' + encodeURIComponent(this.donation.voiceNoteUrl), { method: 'DELETE' }).catch(e => console.error('Failed to delete VN', e));
+    }
+
     setTimeout(() => {
       this.el.remove();
       if (this.onEndCallback) this.onEndCallback();

@@ -1,4 +1,4 @@
-import { Controller, Post, Body, HttpCode, HttpStatus, UnauthorizedException, Get, Query, Req, Res } from '@nestjs/common';
+import { Controller, Post, Body, HttpCode, HttpStatus, UnauthorizedException, Get, Query, Req, Res, UseInterceptors, UploadedFile, BadRequestException, Delete } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Queue } from 'bullmq';
 import { InjectQueue } from '@nestjs/bullmq';
@@ -10,6 +10,10 @@ import { TikTokService } from './providers/tiktok.service';
 import { ProfanityService } from './providers/profanity.service';
 import { YouTubeService } from './providers/youtube.service';
 import { InstagramService } from './providers/instagram.service';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { extname, join } from 'path';
+import * as fs from 'fs';
 
 @Controller('test-donation')
 export class DonationsController {
@@ -32,11 +36,31 @@ export class DonationsController {
 
   @Post()
   @HttpCode(HttpStatus.ACCEPTED)
-  async handleDonation(@Body() createDonationDto: CreateDonationDto) {
+  @UseInterceptors(FileInterceptor('voiceNote', {
+    storage: diskStorage({
+      destination: './public/uploads/voice',
+      filename: (req, file, cb) => {
+        const randomName = Array(32).fill(null).map(() => (Math.round(Math.random() * 16)).toString(16)).join('');
+        cb(null, `${randomName}${extname(file.originalname)}`);
+      }
+    }),
+    limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit
+    fileFilter: (req, file, cb) => {
+      if (!file.mimetype.match(/\/(audio|mpeg|wav|ogg|webm|mp4)$/)) {
+        return cb(new BadRequestException('Only audio files are allowed!'), false);
+      }
+      cb(null, true);
+    }
+  }))
+  async handleDonation(@Body() createDonationDto: CreateDonationDto, @UploadedFile() file?: Express.Multer.File) {
     const expectedStreamKey = this.configService.get('STREAM_KEY', { infer: true });
 
     if (createDonationDto.streamKey !== expectedStreamKey) {
       throw new UnauthorizedException('Invalid stream key');
+    }
+
+    if (file) {
+      createDonationDto.voiceNoteUrl = `/uploads/voice/${file.filename}`;
     }
 
     // Censor bad words in name and message
@@ -51,6 +75,23 @@ export class DonationsController {
     await this.donationsQueue.add('process-donation', createDonationDto);
 
     return { message: 'Donation accepted for processing' };
+  }
+
+  @Delete('voice-note')
+  async deleteVoiceNote(@Query('path') filepath: string) {
+    if (!filepath || !filepath.startsWith('/uploads/voice/')) {
+      return { status: 'ignored' };
+    }
+    try {
+      const fullPath = join(process.cwd(), 'public', filepath);
+      if (fs.existsSync(fullPath)) {
+        fs.unlinkSync(fullPath);
+      }
+      return { status: 'deleted' };
+    } catch (err) {
+      console.error('Failed to delete voice note', err);
+      return { status: 'error' };
+    }
   }
 
   @Post('extract-tiktok')

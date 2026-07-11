@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Subathon Timer</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Jersey+10&family=Outfit:wght@400;600;800&display=swap');
+
+    body {
+      margin: 0;
+      padding: 0;
+      background: transparent;
+      overflow: hidden;
+      font-family: 'Outfit', sans-serif;
+    }
+
+    .subathon-container {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background: rgba(13, 14, 18, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-left: 4px solid #ef4444;
+      border-radius: 8px;
+      padding: 12px 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(10px);
+      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .subathon-container.add-time {
+      transform: scale(1.1);
+      border-left-color: #10b981;
+      box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
+    }
+
+    .subathon-label {
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .subathon-timer {
+      color: #ffffff;
+      font-family: 'Jersey 10', cursive;
+      font-size: 48px;
+      line-height: 1;
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .subathon-timer.paused {
+      color: #f59e0b;
+    }
+  </style>
+  <script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+  <div class="subathon-container" id="subathonContainer">
+    <div class="subathon-label">Subathon</div>
+    <div class="subathon-timer" id="timerDisplay">00:00:00</div>
+  </div>
+
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const streamKey = urlParams.get('key');
+    
+    // Pass streamKey to authenticate with the backend RealtimeGateway
+    const socket = io({
+      query: { streamKey: streamKey || 'local' }
+    });
+    
+    const timerDisplay = document.getElementById('timerDisplay');
+    const container = document.getElementById('subathonContainer');
+
+    let state = {
+      targetEndTime: null,
+      remainingTimeMs: 0,
+      isRunning: false,
+      isActive: false
+    };
+
+    let localTimer = null;
+    let previousRemainingMs = 0;
+
+    socket.on('subathon:update', (newState) => {
+      // Check if time increased
+      const currentRemaining = newState.isRunning && newState.targetEndTime 
+        ? Math.max(0, newState.targetEndTime - Date.now()) 
+        : newState.remainingTimeMs;
+        
+      if (currentRemaining > previousRemainingMs + 2000) {
+        // Time was added (more than 2s difference to account for latency)
+        container.classList.add('add-time');
+        setTimeout(() => container.classList.remove('add-time'), 500);
+      }
+      
+      previousRemainingMs = currentRemaining;
+      state = newState;
+      
+      if (!state.isActive) {
+        container.style.display = 'none';
+      } else {
+        container.style.display = 'flex';
+      }
+      
+      updateDisplay();
+    });
+
+    // Initial fetch
+    fetch('/subathon/state')
+      .then(r => r.json())
+      .then(newState => {
+        state = newState;
+        if (!state.isActive) {
+          container.style.display = 'none';
+        }
+        updateDisplay();
+      });
+
+    function formatTime(ms) {
+      if (ms <= 0) return "00:00:00";
+      const totalSeconds = Math.floor(ms / 1000);
+      const hours = Math.floor(totalSeconds / 3600);
+      const minutes = Math.floor((totalSeconds % 3600) / 60);
+      const seconds = totalSeconds % 60;
+      
+      return [
+        hours.toString().padStart(2, '0'),
+        minutes.toString().padStart(2, '0'),
+        seconds.toString().padStart(2, '0')
+      ].join(':');
+    }
+
+    function updateDisplay() {
+      if (state.isRunning && state.targetEndTime) {
+        const remaining = Math.max(0, state.targetEndTime - Date.now());
+        timerDisplay.textContent = formatTime(remaining);
+        timerDisplay.classList.remove('paused');
+      } else {
+        timerDisplay.textContent = formatTime(state.remainingTimeMs);
+        timerDisplay.classList.add('paused');
+      }
+    }
+
+    // Tick every 100ms for smooth update (but formatTime only shows seconds)
+    // Running it faster than 1s prevents skipping seconds due to drift
+    setInterval(updateDisplay, 100);
+  </script>
+</body>
+</html>

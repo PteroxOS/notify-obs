@@ -4,6 +4,9 @@ import { Job } from 'bullmq';
 import { RealtimeGateway } from '../realtime/realtime.gateway';
 import { YouTubeService, MediaTrack } from './providers/youtube.service';
 import { GoalService } from '../goal/goal.service';
+import { SubathonService } from '../subathon/subathon.service';
+import { LeaderboardService } from '../leaderboard/leaderboard.service';
+import { TickerService } from '../ticker/ticker.service';
 
 @Processor('donations-processing')
 export class DonationsProcessor extends WorkerHost {
@@ -12,7 +15,10 @@ export class DonationsProcessor extends WorkerHost {
   constructor(
     private readonly realtimeGateway: RealtimeGateway,
     private readonly youtubeService: YouTubeService,
-    private readonly goalService: GoalService
+    private readonly goalService: GoalService,
+    private readonly subathonService: SubathonService,
+    private readonly leaderboardService: LeaderboardService,
+    private readonly tickerService: TickerService
   ) {
     super();
   }
@@ -51,6 +57,15 @@ export class DonationsProcessor extends WorkerHost {
     
     // Update the donation goal
     this.goalService.incrementAmount(job.data.amount);
+    
+    // Update the subathon timer
+    this.subathonService.processDonation(job.data.amount);
+    
+    // Update leaderboard
+    this.leaderboardService.processDonation(job.data.name, job.data.amount);
+    
+    // Update ticker
+    this.tickerService.processDonation(job.data.name, job.data.amount);
     
     return { success: true };
   }

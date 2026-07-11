@@ -1,4 +1,5 @@
 import { IsString, IsNumber, IsOptional, IsNotEmpty, Min, IsUrl, IsBoolean } from 'class-validator';
+import { Type, Transform } from 'class-transformer';
 
 export class CreateDonationDto {
   @IsString()
@@ -9,6 +10,7 @@ export class CreateDonationDto {
   @IsNotEmpty()
   name: string;
 
+  @Type(() => Number)
   @IsNumber()
   @Min(20000, { message: 'Minimal donasi adalah Rp 20.000' })
   amount: number;
@@ -25,7 +27,12 @@ export class CreateDonationDto {
   @IsOptional()
   instagramUrl?: string;
 
+  @Transform(({ value }) => value === 'true' || value === true)
   @IsBoolean()
   @IsOptional()
   isSongShare?: boolean;
+
+  @IsString()
+  @IsOptional()
+  voiceNoteUrl?: string;
 }

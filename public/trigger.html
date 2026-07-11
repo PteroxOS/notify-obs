@@ -145,7 +145,11 @@
     <div class="tabs">
       <div class="tab active" onclick="switchTab('urlTab')">URL Media</div>
       <div class="tab" onclick="switchTab('searchTab')">Song Share</div>
+      <div class="tab" onclick="switchTab('voiceNoteTab')">Voice Note</div>
       <div class="tab" onclick="switchTab('goalTab')">Goal Settings</div>
+      <div class="tab" onclick="switchTab('subathonTab')">Subathon</div>
+      <div class="tab" onclick="switchTab('leaderboardTab')">Leaderboard</div>
+      <div class="tab" onclick="switchTab('tickerTab')">Running Text</div>
     </div>
 
     <form id="donationForm">
@@ -176,6 +180,23 @@
           <label for="songSearchInput">Cari Lagu</label>
           <input type="text" id="songSearchInput" placeholder="Ketik judul lagu di sini...">
           <div id="songSearchResults"></div>
+        </div>
+      </div>
+
+      <!-- TAB CONTENT: VOICE NOTE -->
+      <div id="voiceNoteTab" class="tab-content">
+        <div class="form-group">
+          <label>Rekam Voice Note</label>
+          <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 6px;">
+            <button type="button" id="recordBtn" style="background: #ef4444; color: white; padding: 10px 16px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">🎤 Record</button>
+            <span id="recordTimer" style="font-family: monospace; font-size: 16px; color: #ef4444; display: none; font-weight: bold;">0s</span>
+          </div>
+          <div id="vnDurationInfo" style="font-size: 12px; color: #666;">Durasi maksimal: 10 detik per kelipatan Rp 50.000</div>
+          
+          <div id="vnPreviewContainer" style="display: none; margin-top: 12px; padding: 12px; background: rgba(255,255,255,0.05); border-radius: 6px;">
+            <audio id="vnAudioPlayback" controls style="width: 100%; height: 36px; outline: none;"></audio>
+            <button type="button" id="deleteVnBtn" style="background: transparent; border: 1px solid #ef4444; color: #ef4444; margin-top: 8px; padding: 6px 12px; border-radius: 4px; font-size: 12px; cursor: pointer;">Hapus Rekaman</button>
+          </div>
         </div>
       </div>
 
@@ -212,6 +233,59 @@
       </div>
       <button type="submit" style="background: #28a745;">Update Goal</button>
       <div id="goalStatus" style="margin-top: 15px; padding: 10px; border-radius: 4px; display: none;"></div>
+    </form>
+
+    <!-- FORM PENGATURAN SUBATHON (Sembunyi by default) -->
+    <form id="subathonForm" style="display: none;">
+      <div class="form-group" style="display: flex; gap: 10px; align-items: center; margin-bottom: 20px;">
+        <label style="margin: 0; min-width: 150px;">Enable Subathon:</label>
+        <input type="checkbox" id="subathonActive" style="width: 20px; height: 20px;">
+      </div>
+      
+      <div style="border: 1px solid #ddd; padding: 15px; border-radius: 6px; margin-bottom: 15px;">
+        <h4 style="margin-top: 0;">Timer Controls</h4>
+        <div style="display: flex; gap: 10px;">
+          <button type="button" id="subathonToggleBtn" onclick="toggleSubathon()" style="background: #f59e0b; width: 50%;">▶ Start Timer</button>
+          <div style="display: flex; gap: 10px; width: 50%;">
+            <input type="number" id="subathonAddMinutes" placeholder="Minutes" value="10">
+            <button type="button" onclick="addSubathonTime()" style="background: #007bff;">Add Time</button>
+          </div>
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label>Settings (Donation Multiplier)</label>
+        <div style="display: flex; gap: 10px; align-items: center;">
+          <span>Setiap Rp</span>
+          <input type="number" id="subathonAmount" value="10000" style="width: 100px;">
+          <span>nambah</span>
+          <input type="number" id="subathonMinutes" value="1" style="width: 80px;">
+          <span>menit</span>
+        </div>
+      </div>
+      
+      <button type="button" onclick="saveSubathonSettings()" style="background: #28a745;">Save Settings</button>
+      <div id="subathonStatus" style="margin-top: 15px; padding: 10px; border-radius: 4px; display: none;"></div>
+    </form>
+
+    <!-- FORM PENGATURAN LEADERBOARD (Sembunyi by default) -->
+    <form id="leaderboardForm" style="display: none;">
+      <div style="border: 1px solid #ddd; padding: 15px; border-radius: 6px; margin-bottom: 15px;">
+        <h4 style="margin-top: 0;">Leaderboard Controls</h4>
+        <p style="font-size: 14px; color: #666;">Reset Leaderboard untuk memulai ulang dari awal (misalnya awal bulan atau awal stream).</p>
+        <button type="button" onclick="resetLeaderboard()" style="background: #dc3545; width: 100%;">Reset Leaderboard</button>
+      </div>
+      <div id="leaderboardStatus" style="margin-top: 15px; padding: 10px; border-radius: 4px; display: none;"></div>
+    </form>
+
+    <!-- FORM PENGATURAN RUNNING TEXT (Sembunyi by default) -->
+    <form id="tickerForm" style="display: none;">
+      <div class="form-group">
+        <label for="tickerMessage">Custom Message</label>
+        <input type="text" id="tickerMessage" value="dukung di https://saweria.co/Jepphyruu" placeholder="Masukkan pesan spesial...">
+      </div>
+      <button type="button" onclick="saveTickerSettings()" style="background: #28a745;">Save Message</button>
+      <div id="tickerStatus" style="margin-top: 15px; padding: 10px; border-radius: 4px; display: none;"></div>
     </form>
   </div>
 
@@ -277,10 +351,36 @@
       
       if (tabId === 'goalTab') {
         document.getElementById('donationForm').style.display = 'none';
+        document.getElementById('subathonForm').style.display = 'none';
+        document.getElementById('leaderboardForm').style.display = 'none';
+        document.getElementById('tickerForm').style.display = 'none';
         document.getElementById('goalForm').style.display = 'block';
         fetchCurrentGoal();
+      } else if (tabId === 'subathonTab') {
+        document.getElementById('donationForm').style.display = 'none';
+        document.getElementById('goalForm').style.display = 'none';
+        document.getElementById('leaderboardForm').style.display = 'none';
+        document.getElementById('tickerForm').style.display = 'none';
+        document.getElementById('subathonForm').style.display = 'block';
+        fetchSubathonState();
+      } else if (tabId === 'leaderboardTab') {
+        document.getElementById('donationForm').style.display = 'none';
+        document.getElementById('goalForm').style.display = 'none';
+        document.getElementById('subathonForm').style.display = 'none';
+        document.getElementById('tickerForm').style.display = 'none';
+        document.getElementById('leaderboardForm').style.display = 'block';
+      } else if (tabId === 'tickerTab') {
+        document.getElementById('donationForm').style.display = 'none';
+        document.getElementById('goalForm').style.display = 'none';
+        document.getElementById('subathonForm').style.display = 'none';
+        document.getElementById('leaderboardForm').style.display = 'none';
+        document.getElementById('tickerForm').style.display = 'block';
+        fetchTickerState();
       } else {
         document.getElementById('goalForm').style.display = 'none';
+        document.getElementById('subathonForm').style.display = 'none';
+        document.getElementById('leaderboardForm').style.display = 'none';
+        document.getElementById('tickerForm').style.display = 'none';
         document.getElementById('donationForm').style.display = 'block';
         document.getElementById(tabId).classList.add('active');
       }
@@ -370,6 +470,85 @@
       }, 600); // 600ms debounce
     });
 
+    let mediaRecorder = null;
+    let audioChunks = [];
+    let recordedBlob = null;
+    let recordingInterval = null;
+    let recordingTime = 0;
+
+    const recordBtn = document.getElementById('recordBtn');
+    const recordTimer = document.getElementById('recordTimer');
+    const vnPreviewContainer = document.getElementById('vnPreviewContainer');
+    const vnAudioPlayback = document.getElementById('vnAudioPlayback');
+    const deleteVnBtn = document.getElementById('deleteVnBtn');
+    const amountInput = document.getElementById('amount');
+
+    if (recordBtn) {
+      recordBtn.addEventListener('click', async () => {
+        if (mediaRecorder && mediaRecorder.state === 'recording') {
+          // Stop recording
+          mediaRecorder.stop();
+          recordBtn.textContent = '🎤 Record';
+          recordBtn.style.background = '#ef4444';
+          clearInterval(recordingInterval);
+          recordTimer.style.display = 'none';
+          return;
+        }
+
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          mediaRecorder = new MediaRecorder(stream);
+          audioChunks = [];
+          recordingTime = 0;
+          
+          mediaRecorder.ondataavailable = e => {
+            if (e.data.size > 0) audioChunks.push(e.data);
+          };
+
+          mediaRecorder.onstop = () => {
+            recordedBlob = new Blob(audioChunks, { type: 'audio/webm' });
+            vnAudioPlayback.src = URL.createObjectURL(recordedBlob);
+            vnPreviewContainer.style.display = 'block';
+            stream.getTracks().forEach(track => track.stop()); // Stop microphone access
+          };
+
+          mediaRecorder.start();
+          recordBtn.textContent = '⏹ Stop';
+          recordBtn.style.background = '#f59e0b';
+          recordTimer.style.display = 'inline-block';
+          recordTimer.textContent = '0s';
+
+          // Enforce max duration automatically
+          recordingInterval = setInterval(() => {
+            recordingTime++;
+            recordTimer.textContent = recordingTime + 's';
+            
+            const amount = parseInt(amountInput.value, 10) || 0;
+            const maxDuration = Math.ceil(amount / 50000) * 10;
+            if (recordingTime >= maxDuration) {
+              if (mediaRecorder.state === 'recording') {
+                mediaRecorder.stop();
+                recordBtn.textContent = '🎤 Record';
+                recordBtn.style.background = '#ef4444';
+                clearInterval(recordingInterval);
+                recordTimer.style.display = 'none';
+              }
+            }
+          }, 1000);
+
+        } catch (err) {
+          alert('Gagal mengakses mikrofon. Pastikan browser lu ngasih izin mic.');
+          console.error(err);
+        }
+      });
+
+      deleteVnBtn.addEventListener('click', () => {
+        recordedBlob = null;
+        vnAudioPlayback.src = '';
+        vnPreviewContainer.style.display = 'none';
+      });
+    }
+
     document.getElementById('donationForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       
@@ -379,28 +558,47 @@
       const message = document.getElementById('message').value;
       const mediaUrl = document.getElementById('youtubeUrl').value;
       const statusDiv = document.getElementById('status');
-
-      const payload = { streamKey, name, amount, message };
       
+      statusDiv.style.display = 'none';
+
       const isSongShare = document.getElementById('searchTab').classList.contains('active');
-      if (isSongShare && mediaUrl) {
-        payload.youtubeUrl = mediaUrl;
-        payload.isSongShare = true;
-      } else if (mediaUrl) {
-        if (/instagram\.com/i.test(mediaUrl)) {
-          payload.instagramUrl = mediaUrl;
-        } else {
-          payload.youtubeUrl = mediaUrl;
+      const isVoiceNote = document.getElementById('voiceNoteTab').classList.contains('active');
+      let voiceNoteFile = null;
+
+      if (isVoiceNote) {
+        if (!recordedBlob) {
+           statusDiv.textContent = `❌ Error: Anda belum merekam Voice Note.`;
+           statusDiv.className = 'error';
+           statusDiv.style.display = 'block';
+           return;
         }
+        // Bungkus blob ke file
+        voiceNoteFile = new File([recordedBlob], 'voicenote.webm', { type: 'audio/webm' });
       }
 
-      statusDiv.style.display = 'none';
+      const formData = new FormData();
+      formData.append('streamKey', streamKey);
+      formData.append('name', name);
+      formData.append('amount', amount);
+      formData.append('message', message);
+      
+      if (isSongShare && mediaUrl) {
+        formData.append('youtubeUrl', mediaUrl);
+        formData.append('isSongShare', 'true');
+      } else if (isVoiceNote && voiceNoteFile) {
+        formData.append('voiceNote', voiceNoteFile);
+      } else if (mediaUrl && !isVoiceNote) {
+        if (/instagram\.com/i.test(mediaUrl)) {
+          formData.append('instagramUrl', mediaUrl);
+        } else {
+          formData.append('youtubeUrl', mediaUrl);
+        }
+      }
 
       try {
         const response = await fetch('/test-donation', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
+          body: formData
         });
 
         if (response.ok) {
@@ -424,46 +622,166 @@
       }
     });
 
-    // GOAL FORM SUBMISSION
-    document.getElementById('goalForm').addEventListener('submit', async (e) => {
+        document.getElementById('goalForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       
       const streamKey = document.getElementById('goalStreamKey').value;
       const title = document.getElementById('goalTitle').value;
       const targetAmount = parseInt(document.getElementById('goalTarget').value, 10);
-      const currentVal = document.getElementById('goalCurrent').value;
+      const currentInput = document.getElementById('goalCurrent').value;
+      const statusDiv = document.getElementById('goalStatus');
+      
+      statusDiv.style.display = 'none';
       
       const payload = { streamKey, title, targetAmount };
-      if (currentVal !== '') {
-        payload.currentAmount = parseInt(currentVal, 10);
+      if (currentInput) {
+        payload.currentAmount = parseInt(currentInput, 10);
       }
-
-      const statusDiv = document.getElementById('goalStatus');
-      statusDiv.style.display = 'none';
-
+      
       try {
-        const res = await fetch('/goal/update', {
+        const response = await fetch('/goal', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
         });
-
-        if (res.ok) {
+        
+        if (response.ok) {
+          statusDiv.textContent = '✅ Goal successfully updated!';
           statusDiv.className = 'success';
-          statusDiv.innerText = 'Goal successfully updated!';
           statusDiv.style.display = 'block';
-          document.getElementById('goalCurrent').value = ''; // Reset input
         } else {
+          statusDiv.textContent = '❌ Failed to update goal (Check Stream Key)';
           statusDiv.className = 'error';
-          statusDiv.innerText = 'Error: ' + (await res.text());
           statusDiv.style.display = 'block';
         }
       } catch (err) {
-        statusDiv.className = 'error';
-        statusDiv.innerText = 'Error: ' + err.message;
-        statusDiv.style.display = 'block';
+        console.error(err);
       }
     });
+
+    // Subathon Logic
+    let isSubathonRunning = false;
+    async function fetchSubathonState() {
+      try {
+        const res = await fetch('/subathon/state');
+        if (res.ok) {
+          const state = await res.json();
+          document.getElementById('subathonActive').checked = state.isActive || false;
+          document.getElementById('subathonAmount').value = state.multiplierAmount || 10000;
+          document.getElementById('subathonMinutes').value = state.multiplierMinutes || 1;
+          isSubathonRunning = state.isRunning;
+          updateToggleButton();
+        }
+      } catch (err) {
+        console.error('Failed to fetch subathon state', err);
+      }
+    }
+
+    function updateToggleButton() {
+      const btn = document.getElementById('subathonToggleBtn');
+      if (isSubathonRunning) {
+        btn.textContent = '⏸ Pause Timer';
+        btn.style.background = '#dc3545';
+      } else {
+        btn.textContent = '▶ Start Timer';
+        btn.style.background = '#f59e0b';
+      }
+    }
+
+    async function toggleSubathon() {
+      isSubathonRunning = !isSubathonRunning;
+      updateToggleButton();
+      await fetch('/subathon/toggle', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ start: isSubathonRunning })
+      });
+    }
+
+    async function addSubathonTime() {
+      const mins = parseInt(document.getElementById('subathonAddMinutes').value, 10) || 0;
+      if (mins <= 0) return;
+      await fetch('/subathon/add-time', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ minutes: mins })
+      });
+      alert(`Berhasil nambah ${mins} menit ke timer!`);
+    }
+
+    async function saveSubathonSettings() {
+      const isActive = document.getElementById('subathonActive').checked;
+      const amount = parseInt(document.getElementById('subathonAmount').value, 10);
+      const minutes = parseInt(document.getElementById('subathonMinutes').value, 10);
+      const statusDiv = document.getElementById('subathonStatus');
+      
+      try {
+        await fetch('/subathon/settings', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ multiplierAmount: amount, multiplierMinutes: minutes, isActive })
+        });
+        statusDiv.textContent = '✅ Subathon settings saved!';
+        statusDiv.className = 'success';
+        statusDiv.style.display = 'block';
+      } catch (err) {
+        statusDiv.textContent = '❌ Failed to save subathon settings';
+        statusDiv.className = 'error';
+        statusDiv.style.display = 'block';
+      }
+    }
+
+    // Leaderboard Logic
+    async function resetLeaderboard() {
+      if (!confirm('Yakin mau mereset data Leaderboard? Aksi ini tidak bisa di-undo!')) return;
+      
+      const statusDiv = document.getElementById('leaderboardStatus');
+      try {
+        await fetch('/leaderboard/reset', { method: 'POST' });
+        statusDiv.textContent = '✅ Leaderboard berhasil direset!';
+        statusDiv.className = 'success';
+        statusDiv.style.display = 'block';
+        setTimeout(() => { statusDiv.style.display = 'none'; }, 3000);
+      } catch (err) {
+        statusDiv.textContent = '❌ Gagal mereset Leaderboard';
+        statusDiv.className = 'error';
+        statusDiv.style.display = 'block';
+      }
+    }
+
+    // Ticker Logic
+    async function fetchTickerState() {
+      try {
+        const res = await fetch('/ticker/state');
+        if (res.ok) {
+          const state = await res.json();
+          document.getElementById('tickerMessage').value = state.customMessage || '';
+        }
+      } catch (err) {
+        console.error('Failed to fetch ticker state', err);
+      }
+    }
+
+    async function saveTickerSettings() {
+      const customMessage = document.getElementById('tickerMessage').value;
+      const statusDiv = document.getElementById('tickerStatus');
+      
+      try {
+        await fetch('/ticker/settings', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ customMessage })
+        });
+        statusDiv.textContent = '✅ Pesan Running Text berhasil disimpan!';
+        statusDiv.className = 'success';
+        statusDiv.style.display = 'block';
+        setTimeout(() => { statusDiv.style.display = 'none'; }, 3000);
+      } catch (err) {
+        statusDiv.textContent = '❌ Gagal menyimpan pesan';
+        statusDiv.className = 'error';
+        statusDiv.style.display = 'block';
+      }
+    }
   </script>
 </body>
 </html>

@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Top Donator Leaderboard</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap');
+
+    body {
+      margin: 0;
+      padding: 0;
+      background: transparent;
+      overflow: hidden;
+      font-family: 'Outfit', sans-serif;
+    }
+
+    .leaderboard-container {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      width: 320px;
+      background: rgba(13, 14, 18, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(10px);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .leaderboard-title {
+      color: #f59e0b;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      font-weight: 800;
+      text-align: center;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .leaderboard-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .leaderboard-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      transition: transform 0.3s ease, background 0.3s ease;
+    }
+
+    .leaderboard-item.rank-1 {
+      background: linear-gradient(90deg, rgba(245, 158, 11, 0.1) 0%, rgba(245, 158, 11, 0.02) 100%);
+      border-left: 3px solid #f59e0b;
+    }
+    
+    .leaderboard-item.rank-2 {
+      border-left: 3px solid #94a3b8;
+    }
+    
+    .leaderboard-item.rank-3 {
+      border-left: 3px solid #b45309;
+    }
+
+    .item-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .rank-badge {
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      font-size: 12px;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .rank-1 .rank-badge { background: #f59e0b; color: #fff; }
+    .rank-2 .rank-badge { background: #94a3b8; color: #fff; }
+    .rank-3 .rank-badge { background: #b45309; color: #fff; }
+
+    .donor-name {
+      color: #ffffff;
+      font-size: 15px;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 140px;
+    }
+
+    .donor-amount {
+      color: #10b981;
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .empty-state {
+      color: rgba(255, 255, 255, 0.4);
+      font-size: 13px;
+      text-align: center;
+      padding: 10px;
+      font-weight: 600;
+    }
+  </style>
+  <script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+  <div class="leaderboard-container">
+    <div class="leaderboard-title">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M2 4h20M2 4l3 11a2 2 0 0 0 2 1.5h10a2 2 0 0 0 2-1.5l3-11M2 4v4a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V4"/>
+        <path d="M12 16.5V22M8 22h8"/>
+      </svg>
+      Top Donators
+    </div>
+    <div class="leaderboard-list" id="leaderboardList">
+      <!-- Generated via JS -->
+    </div>
+  </div>
+
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const streamKey = urlParams.get('key');
+    
+    const socket = io({
+      query: { streamKey: streamKey || 'local' }
+    });
+    
+    const listContainer = document.getElementById('leaderboardList');
+
+    function formatRupiah(amount) {
+      return new Intl.NumberFormat('id-ID', {
+        style: 'currency',
+        currency: 'IDR',
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+      }).format(amount);
+    }
+
+    function renderLeaderboard(data) {
+      listContainer.innerHTML = '';
+      
+      if (!data || data.length === 0) {
+        listContainer.innerHTML = '<div class="empty-state">Belum ada donasi.</div>';
+        return;
+      }
+
+      data.forEach((entry, index) => {
+        const rank = index + 1;
+        const item = document.createElement('div');
+        item.className = `leaderboard-item rank-${rank}`;
+        
+        let rankHtml = `<div class="rank-badge">${rank}</div>`;
+        if (rank === 1) rankHtml = `<div class="rank-badge">👑</div>`;
+        
+        item.innerHTML = `
+          <div class="item-left">
+            ${rankHtml}
+            <div class="donor-name">${entry.name}</div>
+          </div>
+          <div class="donor-amount">${formatRupiah(entry.amount)}</div>
+        `;
+        listContainer.appendChild(item);
+      });
+    }
+
+    // Initial fetch
+    fetch('/leaderboard/state')
+      .then(r => r.json())
+      .then(data => {
+        renderLeaderboard(data);
+      });
+
+    // Realtime update
+    socket.on('leaderboard:update', (data) => {
+      renderLeaderboard(data);
+    });
+  </script>
+</body>
+</html>

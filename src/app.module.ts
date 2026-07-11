@@ -7,6 +7,9 @@ import { validate } from './config/env.validation';
 import { DonationsModule } from './donations/donations.module';
 import { RealtimeModule } from './realtime/realtime.module';
 import { GoalModule } from './goal/goal.module';
+import { SubathonModule } from './subathon/subathon.module';
+import { LeaderboardModule } from './leaderboard/leaderboard.module';
+import { TickerModule } from './ticker/ticker.module';
 
 @Module({
   imports: [
@@ -26,6 +29,9 @@ import { GoalModule } from './goal/goal.module';
     DonationsModule,
     RealtimeModule,
     GoalModule,
+    SubathonModule,
+    LeaderboardModule,
+    TickerModule,
   ],
   controllers: [AppController],
   providers: [AppService],

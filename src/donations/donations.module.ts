@@ -8,6 +8,9 @@ import { ProfanityService } from './providers/profanity.service';
 import { InstagramService } from './providers/instagram.service';
 import { RealtimeModule } from '../realtime/realtime.module';
 import { GoalModule } from '../goal/goal.module';
+import { SubathonModule } from '../subathon/subathon.module';
+import { LeaderboardModule } from '../leaderboard/leaderboard.module';
+import { TickerModule } from '../ticker/ticker.module';
 
 @Module({
   imports: [
@@ -16,6 +19,9 @@ import { GoalModule } from '../goal/goal.module';
     }),
     RealtimeModule,
     GoalModule,
+    SubathonModule,
+    LeaderboardModule,
+    TickerModule,
   ],
   controllers: [DonationsController],
   providers: [DonationsProcessor, TikTokService, YouTubeService, ProfanityService, InstagramService],
